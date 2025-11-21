@@ -1,5 +1,7 @@
 package dev.ctsetera.ikaranpu.domain.model
 
+import androidx.compose.runtime.Stable
+
 /**
  * トラック
  *
@@ -12,6 +14,7 @@ package dev.ctsetera.ikaranpu.domain.model
  * @param startText 再生開始時に読み上げるテキスト
  * @param endText 再生終了時に読み上げるテキスト
  */
+@Stable
 data class Track(
     val trackId: Int,
     val trackName: String,
