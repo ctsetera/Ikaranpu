@@ -2,7 +2,7 @@ package dev.ctsetera.ikaranpu.ui.screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,7 +23,9 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(navController: NavController, openDrawer: () -> Unit) {
+fun SettingScreen(navController: NavController) {
+    val clicked = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,10 +35,16 @@ fun SettingScreen(navController: NavController, openDrawer: () -> Unit) {
                 ),
                 title = { Text("設定") },
                 navigationIcon = {
-                    IconButton(onClick = openDrawer) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    IconButton(
+                        onClick = {
+                            clicked.value = true
+                            navController.popBackStack()
+                        },
+                        enabled = !clicked.value
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
-                },
+                }
             )
         }
     ) { innerPadding ->
@@ -51,6 +61,6 @@ fun SettingScreen(navController: NavController, openDrawer: () -> Unit) {
 @Composable
 fun SettingScreenPreview() {
     IkaranpuTheme {
-        SettingScreen(navController = rememberNavController(), openDrawer = {})
+        SettingScreen(navController = rememberNavController())
     }
 }

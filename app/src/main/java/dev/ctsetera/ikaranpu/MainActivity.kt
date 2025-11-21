@@ -77,12 +77,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.Settings.route) {
                             SettingScreen(
-                                navController = navController,
-                                openDrawer = { scope.launch { drawerState.open() } }
+                                navController = navController
                             )
                         }
 
-                        composable(Screen.TrackAdd.route) { TrackAddScreen(navController) } // 追加画面
+                        composable(Screen.TrackAdd.route) { TrackAddScreen(navController) }
                     }
                 }
             }
