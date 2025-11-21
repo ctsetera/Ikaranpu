@@ -1,8 +1,10 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,16 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(navController: NavController, openDrawer: () -> Unit) {
+fun TrackAddScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -29,28 +31,30 @@ fun SettingScreen(navController: NavController, openDrawer: () -> Unit) {
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
-                title = { Text("設定") },
+                title = { Text("トラック追加") },
                 navigationIcon = {
-                    IconButton(onClick = openDrawer) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
-                },
+                }
             )
         }
-    ) { innerPadding ->
-        Text(
-            text = "設定画面です",
+    ) { padding ->
+        Box(
             modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-        )
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("ここで項目を追加できます")
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SettingScreenPreview() {
+fun TrackAddScreenPreview() {
     IkaranpuTheme {
-        SettingScreen(navController = rememberNavController(), openDrawer = {})
+        TrackAddScreen(navController = rememberNavController())
     }
 }
