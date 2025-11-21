@@ -39,8 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessStarted
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
@@ -86,8 +88,9 @@ fun TrackItem(
     Card(
         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -106,14 +109,26 @@ fun TrackItem(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column {
-                    Text(text = characterName, style = MaterialTheme.typography.titleSmall)
-                    Text(text = track.trackName, style = MaterialTheme.typography.titleMedium)
-                }
+                    Row {
+                        Text(
+                            text = characterName,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
 
-                Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.weight(1f))
 
-                Column {
-                    Text(text = "Interval: ${track.interval} sec", textAlign = TextAlign.End)
+                        Text(
+                            text = "Interval: ${track.interval} sec",
+                            textAlign = TextAlign.End,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        text = track.trackName,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1, // 1行だけに制限
+                        overflow = TextOverflow.Ellipsis, // はみ出した部分は...で省略
+                    )
                 }
             }
 
@@ -131,7 +146,7 @@ fun TrackItem(
                         enabled = false,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant),
                         colors = AssistChipDefaults.assistChipColors(
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                            disabledContainerColor = MaterialTheme.colorScheme.background,
                             disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
@@ -180,7 +195,9 @@ fun TrackItem(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
-                    onClick = {}
+                    onClick = dropUnlessStarted {
+                        onClickPlay.invoke()
+                    },
                 ) {
                     Icon(
                         Icons.Default.PlayArrow,
@@ -213,7 +230,7 @@ fun TrackItemPreview() {
                 ),
                 Track(
                     2,
-                    "イカランプ",
+                    "イカランプイカランプイカランプイカランプイカランプイカランプ",
                     CharacterType.METAN,
                     listOf("イカランプみて", "イカランプ確認", "イカランプをみるのよ"),
                     10,

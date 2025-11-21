@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,7 +24,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackAddScreen(navController: NavController) {
+fun TrackPlayScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -32,14 +32,14 @@ fun TrackAddScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
-                title = { Text("トラック追加") },
+                title = { Text("トラック再生") },
                 navigationIcon = {
                     IconButton(
                         onClick = dropUnlessStarted {
                             navController.popBackStack()
                         },
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "戻る")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 }
             )
@@ -51,15 +51,15 @@ fun TrackAddScreen(navController: NavController) {
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            Text("ここで項目を追加できます")
+            Text("ここで項目を再生できます")
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TrackAddScreenPreview() {
+fun TrackPlayScreenPreview() {
     IkaranpuTheme {
-        TrackAddScreen(navController = rememberNavController())
+        TrackPlayScreen(navController = rememberNavController())
     }
 }

@@ -12,11 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -24,8 +23,6 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(navController: NavController) {
-    val clicked = remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -36,11 +33,9 @@ fun SettingScreen(navController: NavController) {
                 title = { Text("設定") },
                 navigationIcon = {
                     IconButton(
-                        onClick = {
-                            clicked.value = true
+                        onClick = dropUnlessStarted {
                             navController.popBackStack()
                         },
-                        enabled = !clicked.value
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
