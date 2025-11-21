@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.ui.component.TrackList
+import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,8 +69,23 @@ fun DraftScreen(viewModel: DraftViewModel = viewModel(), navController: NavContr
                 else -> {
                     TrackList(
                         trackList = uiState.tracks,
-                        navController = navController,
-                        onDelete = { trackId -> viewModel.deleteTrack(trackId) }
+                        onEdit = { trackId ->
+                            navController.navigate(
+                                Screen.TrackEdit.createRoute(
+                                    trackId
+                                )
+                            )
+                        },
+                        onDelete = { trackId ->
+                            viewModel.deleteTrack(trackId)
+                        },
+                        onPlay = { trackId ->
+                            navController.navigate(
+                                Screen.TrackPlay.createRoute(
+                                    trackId
+                                )
+                            )
+                        },
                     )
                 }
             }

@@ -45,29 +45,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessStarted
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.ui.dialog.DeleteTrackConfirmDialog
-import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @Composable
 fun TrackList(
     trackList: List<Track>,
-    navController: NavController,
+    onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
+    onPlay: (Int) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
         items(trackList, key = { it.trackId }) { track ->
             TrackItem(
                 track = track,
-                navController = navController,
-                onDelete = onDelete
+                onEdit = onEdit,
+                onDelete = onDelete,
+                onPlay = onPlay,
             )
         }
     }
@@ -76,8 +75,9 @@ fun TrackList(
 @Composable
 fun TrackItem(
     track: Track,
-    navController: NavController,
+    onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
+    onPlay: (Int) -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -186,11 +186,7 @@ fun TrackItem(
                         DropdownMenuItem(
                             text = { Text("編集") },
                             onClick = dropUnlessStarted {
-                                navController.navigate(
-                                    Screen.TrackEdit.createRoute(
-                                        track.trackId
-                                    )
-                                )
+                                onEdit.invoke(track.trackId)
                                 expanded.value = false
                             }
                         )
@@ -209,11 +205,7 @@ fun TrackItem(
                 if (track.state == TrackState.PLAYABLE) {
                     Button(
                         onClick = dropUnlessStarted {
-                            navController.navigate(
-                                Screen.TrackPlay.createRoute(
-                                    track.trackId
-                                )
-                            )
+                            onPlay.invoke(track.trackId)
                         },
                     ) {
                         Icon(
@@ -272,8 +264,9 @@ fun TrackItemPreview() {
                     state = TrackState.PLAYABLE,
                 )
             ),
-            navController = rememberNavController(),
-            onDelete = {}
+            onEdit = {},
+            onDelete = {},
+            onPlay = {}
         )
     }
 }
