@@ -118,21 +118,8 @@ fun TrackListScreen(
                     else -> {
                         TrackList(
                             trackList = uiState.tracks,
-                            onClickEdit = { track ->
-                                navController.navigate(
-                                    Screen.TrackEdit.createRoute(
-                                        track.trackId
-                                    )
-                                )
-                            },
-                            onClickDelete = {},
-                            onClickPlay = { track ->
-                                navController.navigate(
-                                    Screen.TrackPlay.createRoute(
-                                        track.trackId
-                                    )
-                                )
-                            },
+                            navController = navController,
+                            onDelete = { trackId -> viewModel.deleteTrack(trackId) }
                         )
                     }
                 }

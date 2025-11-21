@@ -33,8 +33,10 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -43,27 +45,29 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessStarted
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
+import dev.ctsetera.ikaranpu.ui.dialog.DeleteTrackConfirmDialog
+import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @Composable
 fun TrackList(
     trackList: List<Track>,
-    onClickEdit: (Track) -> Unit,
-    onClickDelete: (Track) -> Unit,
-    onClickPlay: (Track) -> Unit,
+    navController: NavController,
+    onDelete: (Int) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
         items(trackList, key = { it.trackId }) { track ->
             TrackItem(
                 track = track,
-                onClickEdit = { onClickEdit(track) },
-                onClickDelete = { onClickDelete(track) },
-                onClickPlay = { onClickPlay(track) },
+                navController = navController,
+                onDelete = onDelete
             )
         }
     }
@@ -72,10 +76,11 @@ fun TrackList(
 @Composable
 fun TrackItem(
     track: Track,
-    onClickEdit: () -> Unit,
-    onClickDelete: () -> Unit,
-    onClickPlay: () -> Unit,
+    navController: NavController,
+    onDelete: (Int) -> Unit,
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     val imageRes = when (track.characterType) {
         CharacterType.ZUNDAMON -> R.drawable.char_icon_zundamon
         CharacterType.METAN -> R.drawable.char_icon_metan
@@ -181,13 +186,18 @@ fun TrackItem(
                         DropdownMenuItem(
                             text = { Text("編集") },
                             onClick = dropUnlessStarted {
-                                onClickEdit.invoke()
+                                navController.navigate(
+                                    Screen.TrackEdit.createRoute(
+                                        track.trackId
+                                    )
+                                )
                                 expanded.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("削除") },
                             onClick = dropUnlessStarted {
+                                showDeleteDialog = true
                                 expanded.value = false
                             }
                         )
@@ -199,7 +209,11 @@ fun TrackItem(
                 if (track.state == TrackState.PLAYABLE) {
                     Button(
                         onClick = dropUnlessStarted {
-                            onClickPlay.invoke()
+                            navController.navigate(
+                                Screen.TrackPlay.createRoute(
+                                    track.trackId
+                                )
+                            )
                         },
                     ) {
                         Icon(
@@ -210,6 +224,19 @@ fun TrackItem(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("再生")
                     }
+                }
+
+                if (showDeleteDialog) {
+                    DeleteTrackConfirmDialog(
+                        onConfirm = {
+                            // 削除処理（DBやファイル削除など）
+                            onDelete.invoke(track.trackId)
+                            showDeleteDialog = false
+                        },
+                        onDismiss = {
+                            showDeleteDialog = false
+                        }
+                    )
                 }
             }
         }
@@ -245,9 +272,8 @@ fun TrackItemPreview() {
                     state = TrackState.PLAYABLE,
                 )
             ),
-            onClickEdit = {},
-            onClickDelete = {},
-            onClickPlay = {},
+            navController = rememberNavController(),
+            onDelete = {}
         )
     }
 }

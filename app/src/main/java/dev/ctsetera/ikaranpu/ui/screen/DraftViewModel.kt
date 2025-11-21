@@ -6,6 +6,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DraftViewModel : ViewModel() {
@@ -26,6 +27,15 @@ class DraftViewModel : ViewModel() {
                 isLoading = false,
                 tracks = tracks
             )
+        }
+    }
+
+    fun deleteTrack(trackId: Int) {
+        viewModelScope.launch {
+            // UI更新
+            _uiState.update { state ->
+                state.copy(tracks = state.tracks.filter { it.trackId != trackId })
+            }
         }
     }
 }
