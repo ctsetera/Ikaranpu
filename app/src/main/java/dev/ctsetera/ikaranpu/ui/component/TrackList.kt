@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -32,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +52,6 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
-import dev.ctsetera.ikaranpu.ui.dialog.DeleteTrackConfirmDialog
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @Composable
@@ -234,6 +235,38 @@ fun TrackItem(
         }
     }
 }
+
+@Composable
+fun DeleteTrackConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, // ダイアログ外タップ時など
+
+        title = {
+            Text(text = "トラックを削除しますか？")
+        },
+        text = {
+            Text(
+                text = "この操作は取り消せません。" +
+                        "トラックの情報・ダウンロードした音声ファイルはすべて削除されます。"
+            )
+        },
+
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("はい")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("いいえ")
+            }
+        }
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
