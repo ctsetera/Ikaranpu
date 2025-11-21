@@ -20,8 +20,12 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
         Screen("trackAdd", "トラック追加")
 
     data object TrackEdit :
-        Screen("trackPlay", "トラック編集")
+        Screen("trackEdit/{trackId}", "トラック編集") {
+        fun createRoute(trackId: Int) = "trackEdit/$trackId"
+    }
 
     data object TrackPlay :
-        Screen("trackPlay", "トラック再生")
+        Screen("trackPlay/{trackId}", "トラック再生") {
+        fun createRoute(trackId: Int) = "trackPlay/$trackId"
+    }
 }

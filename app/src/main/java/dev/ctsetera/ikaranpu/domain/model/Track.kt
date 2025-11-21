@@ -13,6 +13,7 @@ import androidx.compose.runtime.Stable
  * @param playMode プレイモード
  * @param startText 再生開始時に読み上げるテキスト
  * @param endText 再生終了時に読み上げるテキスト
+ * @param state トラックの状態
  */
 @Stable
 data class Track(
@@ -24,6 +25,7 @@ data class Track(
     val playMode: PlayMode,
     val startText: String?,
     val endText: String?,
+    val state: TrackState,
 ) {
     companion object {
         const val MAX_TRACK_NAME_LENGTH = 30

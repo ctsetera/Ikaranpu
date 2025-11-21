@@ -47,6 +47,7 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
+import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @Composable
@@ -179,13 +180,14 @@ fun TrackItem(
                     ) {
                         DropdownMenuItem(
                             text = { Text("編集") },
-                            onClick = {
+                            onClick = dropUnlessStarted {
+                                onClickEdit.invoke()
                                 expanded.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("削除") },
-                            onClick = {
+                            onClick = dropUnlessStarted {
                                 expanded.value = false
                             }
                         )
@@ -194,18 +196,20 @@ fun TrackItem(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
-                    onClick = dropUnlessStarted {
-                        onClickPlay.invoke()
-                    },
-                ) {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = "再生",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("再生")
+                if (track.state == TrackState.PLAYABLE) {
+                    Button(
+                        onClick = dropUnlessStarted {
+                            onClickPlay.invoke()
+                        },
+                    ) {
+                        Icon(
+                            Icons.Default.PlayArrow,
+                            contentDescription = "再生",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("再生")
+                    }
                 }
             }
         }
@@ -227,6 +231,7 @@ fun TrackItemPreview() {
                     PlayMode.NORMAL,
                     null,
                     null,
+                    state = TrackState.PLAYABLE,
                 ),
                 Track(
                     2,
@@ -237,6 +242,7 @@ fun TrackItemPreview() {
                     PlayMode.NORMAL,
                     null,
                     null,
+                    state = TrackState.PLAYABLE,
                 )
             ),
             onClickEdit = {},

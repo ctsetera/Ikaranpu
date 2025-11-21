@@ -24,7 +24,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackEditScreen(navController: NavController) {
+fun TrackEditScreen(navController: NavController, trackId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +51,7 @@ fun TrackEditScreen(navController: NavController) {
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            Text("ここで項目を編集できます")
+            Text("ここで項目を編集できます {trackId=$trackId}")
         }
     }
 }
@@ -60,6 +60,6 @@ fun TrackEditScreen(navController: NavController) {
 @Composable
 fun TrackEditScreenPreview() {
     IkaranpuTheme {
-        TrackEditScreen(navController = rememberNavController())
+        TrackEditScreen(navController = rememberNavController(), 1)
     }
 }

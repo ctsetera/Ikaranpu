@@ -161,10 +161,15 @@ class MainActivity : ComponentActivity() {
                                 animationSpec = tween(300)
                             )
                         }
-                    ) {
-                        TrackEditScreen(
-                            navController = navController
-                        )
+                    ) { backStackEntry ->
+                        val trackId = backStackEntry.arguments?.getString("trackId")?.toInt()
+
+                        trackId?.let {
+                            TrackEditScreen(
+                                navController = navController,
+                                trackId = trackId,
+                            )
+                        }
                     }
                     composable(
                         Screen.TrackPlay.route,
@@ -192,10 +197,15 @@ class MainActivity : ComponentActivity() {
                                 animationSpec = tween(300)
                             )
                         }
-                    ) {
-                        TrackPlayScreen(
-                            navController = navController
-                        )
+                    ) { backStackEntry ->
+                        val trackId = backStackEntry.arguments?.getString("trackId")?.toInt()
+
+                        trackId?.let {
+                            TrackPlayScreen(
+                                navController = navController,
+                                trackId = trackId,
+                            )
+                        }
                     }
                 }
             }

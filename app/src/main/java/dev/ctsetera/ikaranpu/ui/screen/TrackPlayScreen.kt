@@ -24,7 +24,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackPlayScreen(navController: NavController) {
+fun TrackPlayScreen(navController: NavController, trackId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +51,7 @@ fun TrackPlayScreen(navController: NavController) {
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            Text("ここで項目を再生できます")
+            Text("ここで項目を再生できます {trackId=$trackId}")
         }
     }
 }
@@ -60,6 +60,6 @@ fun TrackPlayScreen(navController: NavController) {
 @Composable
 fun TrackPlayScreenPreview() {
     IkaranpuTheme {
-        TrackPlayScreen(navController = rememberNavController())
+        TrackPlayScreen(navController = rememberNavController(), 1)
     }
 }
