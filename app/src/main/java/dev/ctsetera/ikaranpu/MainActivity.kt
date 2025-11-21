@@ -4,13 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -23,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,12 +53,13 @@ class MainActivity : ComponentActivity() {
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
 
+                val currentRoute =
+                    navController.currentBackStackEntryAsState().value?.destination?.route
+
                 ModalNavigationDrawer(
                     drawerState = drawerState,
+                    gesturesEnabled = currentRoute == Screen.Home.route,
                     drawerContent = {
-                        val currentRoute =
-                            navController.currentBackStackEntryAsState().value?.destination?.route
-
                         ModalDrawerSheet {
                             DrawerContent(
                                 currentRoute = currentRoute ?: Screen.Home.route
@@ -68,20 +76,78 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) {
-                    NavHost(navController = navController, startDestination = Screen.Home.route) {
-                        composable(Screen.Home.route) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.Home.route,
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    ) {
+                        composable(
+                            Screen.Home.route
+                        ) {
                             TrackListScreen(
                                 navController = navController,
                                 openDrawer = { scope.launch { drawerState.open() } },
                             )
                         }
-                        composable(Screen.Settings.route) {
+                        composable(
+                            Screen.Settings.route,
+                            enterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Start,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Start,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popEnterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.End,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popExitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.End,
+                                    animationSpec = tween(300)
+                                )
+                            }
+                        ) {
                             SettingScreen(
                                 navController = navController
                             )
                         }
 
-                        composable(Screen.TrackAdd.route) { TrackAddScreen(navController) }
+                        composable(
+                            Screen.TrackAdd.route,
+                            enterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Up,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Up,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popEnterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Down,
+                                    animationSpec = tween(300)
+                                )
+                            },
+                            popExitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Down,
+                                    animationSpec = tween(300)
+                                )
+                            }
+                        ) { TrackAddScreen(navController) }
                     }
                 }
             }
@@ -95,6 +161,15 @@ fun DrawerContent(
     onDestinationClicked: (Screen) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            stringResource(R.string.app_name),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.titleLarge
+        )
+        HorizontalDivider()
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         val screens = listOf(Screen.Home, Screen.Settings)
         screens.forEach { screen ->
             NavigationDrawerItem(
