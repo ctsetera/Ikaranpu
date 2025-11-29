@@ -153,6 +153,13 @@ fun TrackEditor(
 
         textItems.forEachIndexed { i, text ->
             Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    onClick = { onDeleteText(i) },
+                    enabled = enabled
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "削除")
+                }
+                Spacer(Modifier.width(8.dp))
                 OutlinedTextField(
                     value = text,
                     onValueChange = { if (enabled) onTextChange(i, it) },
@@ -160,12 +167,6 @@ fun TrackEditor(
                     modifier = Modifier.weight(1f),
                     placeholder = { Text("テキスト${i + 1}を入力") }
                 )
-                IconButton(
-                    onClick = { onDeleteText(i) },
-                    enabled = enabled
-                ) {
-                    Icon(Icons.Default.Delete, contentDescription = "削除")
-                }
             }
             Spacer(Modifier.height(8.dp))
         }
@@ -233,7 +234,7 @@ fun TrackEditor(
 
         Row(modifier = Modifier.fillMaxWidth()) {
             OutlinedButton(
-                onClick = onSave,
+                onClick = onSaveToDraft,
                 enabled = enabled,
                 modifier = Modifier
                     .weight(1f)
