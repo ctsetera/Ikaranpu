@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -19,6 +20,7 @@ import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackListScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackPlayScreen
+import dev.ctsetera.ikaranpu.ui.screen.TrackPlayViewModel
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 class MainActivity : ComponentActivity() {
@@ -202,8 +204,8 @@ class MainActivity : ComponentActivity() {
 
                         trackId?.let {
                             TrackPlayScreen(
+                                viewModel = viewModel { TrackPlayViewModel(trackId) },
                                 navController = navController,
-                                trackId = trackId,
                             )
                         }
                     }

@@ -40,7 +40,6 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 fun TrackPlayScreen(
     viewModel: TrackPlayViewModel = viewModel(),
     navController: NavController,
-    trackId: Int,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -138,7 +137,6 @@ fun TrackPlayScreenPreview() {
         TrackPlayScreen(
             viewModel = viewModel(),
             navController = rememberNavController(),
-            1
         )
     }
 }

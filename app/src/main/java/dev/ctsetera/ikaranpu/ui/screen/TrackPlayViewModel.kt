@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TrackPlayViewModel : ViewModel() {
+class TrackPlayViewModel(private val trackId: Int) : ViewModel() {
 
     private val getTrackByTrackIdUseCase = GetTrackByTrackIdUseCase()
 
@@ -17,10 +17,10 @@ class TrackPlayViewModel : ViewModel() {
     val uiState: StateFlow<TrackPlayUiState> = _uiState
 
     init {
-        playTrack(trackId = 1)
+        playTrack()
     }
 
-    private fun playTrack(trackId: Int) {
+    private fun playTrack() {
         viewModelScope.launch {
             // Load Track
             val track = getTrackByTrackIdUseCase(trackId)
