@@ -2,16 +2,20 @@ package dev.ctsetera.ikaranpu.ui.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
+import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TrackPlayViewModel(private val trackId: Int) : ViewModel() {
-
-    private val getTrackByTrackIdUseCase = GetTrackByTrackIdUseCase()
+class TrackPlayViewModel(
+    private val getTrackByTrackIdUseCase: GetTrackByTrackIdUseCase,
+    private val trackId: Long,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TrackPlayUiState())
     val uiState: StateFlow<TrackPlayUiState> = _uiState
@@ -23,25 +27,33 @@ class TrackPlayViewModel(private val trackId: Int) : ViewModel() {
     private fun playTrack() {
         viewModelScope.launch {
             // Load Track
-            val track = getTrackByTrackIdUseCase(trackId)
-            _uiState.value = TrackPlayUiState(
-                isLoading = false,
-                track = track
-            )
+            getTrackByTrackIdUseCase(trackId)
+                .onSuccess { track ->
+                    _uiState.value = TrackPlayUiState(
+                        isLoading = false,
+                        track = track
+                    )
 
-            // Play
+                    // 再生
 
-            _uiState.update { state ->
-                state.copy(isPlaying = true)
-            }
+                    // UI更新
+                    _uiState.update { state ->
+                        state.copy(isPlaying = true)
+                    }
+                }.onFailure {
+                    _uiState.value = TrackPlayUiState(
+                        isLoading = false,
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
         }
     }
 
     override fun onCleared() {
-        stopTrack(trackId = 1)
+        stopTrack()
     }
 
-    private fun stopTrack(trackId: Int) {
+    private fun stopTrack() {
         viewModelScope.launch {
             // UI更新
             _uiState.update { state ->

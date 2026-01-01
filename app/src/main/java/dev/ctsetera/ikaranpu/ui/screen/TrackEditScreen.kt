@@ -26,7 +26,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackEditScreen(navController: NavController, trackId: Int) {
+fun TrackEditScreen(navController: NavController, trackId: Long) {
     Scaffold(
         topBar = {
             TopAppBar(

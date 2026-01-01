@@ -57,9 +57,9 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 @Composable
 fun TrackList(
     trackList: List<Track>,
-    onEdit: (Int) -> Unit,
-    onDelete: (Int) -> Unit,
-    onPlay: (Int) -> Unit,
+    onEdit: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onPlay: (Long) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
         items(trackList, key = { it.trackId }) { track ->
@@ -76,9 +76,9 @@ fun TrackList(
 @Composable
 fun TrackItem(
     track: Track,
-    onEdit: (Int) -> Unit,
-    onDelete: (Int) -> Unit,
-    onPlay: (Int) -> Unit,
+    onEdit: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onPlay: (Long) -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -279,6 +279,7 @@ fun TrackItemPreview() {
                     "イカランプ",
                     CharacterType.ZUNDAMON,
                     listOf("イカランプみて", "イカランプ確認", "イカランプをみるのだ"),
+                    listOf(),
                     10,
                     PlayMode.NORMAL,
                     null,
@@ -290,6 +291,7 @@ fun TrackItemPreview() {
                     "イカランプイカランプイカランプイカランプイカランプイカランプ",
                     CharacterType.METAN,
                     listOf("イカランプみて", "イカランプ確認", "イカランプをみるのよ"),
+                    listOf(),
                     10,
                     PlayMode.NORMAL,
                     null,

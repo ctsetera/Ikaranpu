@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Ikaranpu</string>
+    <string name="error_database">データベースエラーが発生しました</string>
+    <string name="error_track_not_found">トラックが見つかりません</string>
 </resources>

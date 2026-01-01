@@ -5,5 +5,5 @@ import dev.ctsetera.ikaranpu.domain.model.Track
 data class TrackListUiState(
     val isLoading: Boolean = true,
     val tracks: List<Track> = emptyList(),
-    val errorMessage: String? = null,
+    val errorMessageId: Int? = null,
 )

@@ -6,5 +6,5 @@ data class TrackPlayUiState(
     val isLoading: Boolean = true,
     val isPlaying: Boolean = false,
     val track: Track? = null,
-    val errorMessage: String? = null,
+    val errorMessageId: Int? = null,
 )

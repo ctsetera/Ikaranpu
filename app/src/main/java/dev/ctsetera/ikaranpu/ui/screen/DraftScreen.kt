@@ -1,5 +1,6 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,13 +65,17 @@ fun DraftScreen(viewModel: DraftViewModel = viewModel(), navController: NavContr
                     CircularProgressIndicator()
                 }
 
-                uiState.errorMessage != null -> {
-                    Text(text = "Error: ${uiState.errorMessage}")
+                uiState.errorMessageId != null -> {
+                    Toast.makeText(
+                        LocalContext.current,
+                        "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
+                        Toast.LENGTH_LONG,
+                    ).show()
                 }
 
                 else -> {
                     TrackList(
-                        trackList = uiState.tracks,
+                        trackList = uiState.drafts,
                         onEdit = { trackId ->
                             navController.navigate(
                                 Screen.TrackEdit.createRoute(

@@ -1,5 +1,6 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessStarted
@@ -38,7 +41,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackPlayScreen(
-    viewModel: TrackPlayViewModel = viewModel(),
+    viewModel: TrackPlayViewModel,
     navController: NavController,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -68,8 +71,12 @@ fun TrackPlayScreen(
                         CircularProgressIndicator()
                     }
 
-                    uiState.errorMessage != null -> {
-                        Text(text = "Error: ${uiState.errorMessage}")
+                    uiState.errorMessageId != null -> {
+                        Toast.makeText(
+                            LocalContext.current,
+                            "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
+                            Toast.LENGTH_LONG,
+                        ).show()
                     }
 
                     else -> {

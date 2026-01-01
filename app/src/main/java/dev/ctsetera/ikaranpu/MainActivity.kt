@@ -13,12 +13,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dev.ctsetera.ikaranpu.data.repository.TrackRepository
+import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.DraftScreen
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackListScreen
+import dev.ctsetera.ikaranpu.ui.screen.TrackListViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackPlayScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackPlayViewModel
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -41,6 +46,16 @@ class MainActivity : ComponentActivity() {
                         Screen.Home.route
                     ) {
                         TrackListScreen(
+                            viewModel = viewModel {
+                                TrackListViewModel(
+                                    GetTrackListUseCase(
+                                        TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                    ),
+                                    DeleteTrackUseCase(
+                                        TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                    )
+                                )
+                            },
                             navController = navController,
                         )
                     }
@@ -164,7 +179,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) { backStackEntry ->
-                        val trackId = backStackEntry.arguments?.getString("trackId")?.toInt()
+                        val trackId = backStackEntry.arguments?.getString("trackId")?.toLong()
 
                         trackId?.let {
                             TrackEditScreen(
@@ -200,11 +215,17 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) { backStackEntry ->
-                        val trackId = backStackEntry.arguments?.getString("trackId")?.toInt()
+                        val trackId = backStackEntry.arguments?.getString("trackId")?.toLong()
 
                         trackId?.let {
                             TrackPlayScreen(
-                                viewModel = viewModel { TrackPlayViewModel(trackId) },
+                                viewModel = viewModel {
+                                    TrackPlayViewModel(
+                                        GetTrackByTrackIdUseCase(
+                                            TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                        ), trackId
+                                    )
+                                },
                                 navController = navController,
                             )
                         }

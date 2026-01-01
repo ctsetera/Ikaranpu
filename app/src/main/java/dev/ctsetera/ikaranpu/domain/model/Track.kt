@@ -17,10 +17,11 @@ import androidx.compose.runtime.Stable
  */
 @Stable
 data class Track(
-    val trackId: Int,
+    val trackId: Long = 0,
     val trackName: String,
     val characterType: CharacterType,
     val textList: List<String>,
+    val voiceList: List<ByteArray>,
     val interval: Int,
     val playMode: PlayMode,
     val startText: String?,
