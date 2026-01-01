@@ -32,7 +32,7 @@ import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DraftScreen(viewModel: DraftViewModel = viewModel(), navController: NavController) {
+fun DraftScreen(viewModel: DraftViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -104,6 +104,9 @@ fun DraftScreen(viewModel: DraftViewModel = viewModel(), navController: NavContr
 @Composable
 fun DraftScreenPreview() {
     IkaranpuTheme {
-        DraftScreen(navController = rememberNavController())
+        DraftScreen(
+            viewModel = viewModel(),
+            navController = rememberNavController()
+        )
     }
 }

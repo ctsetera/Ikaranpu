@@ -15,10 +15,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.DraftScreen
+import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
@@ -118,6 +120,16 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         DraftScreen(
+                            viewModel = viewModel {
+                                DraftViewModel(
+                                    GetDraftListUseCase(
+                                        TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                    ),
+                                    DeleteTrackUseCase(
+                                        TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                    )
+                                )
+                            },
                             navController = navController
                         )
                     }
