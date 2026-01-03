@@ -140,8 +140,10 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 1 -> PlayMode.RANDOM
                 else -> PlayMode.NORMAL
             },
-            startText = trackEntity.startText,
-            endText = trackEntity.endText,
+            startText = trackEntity.startText ?: "",
+            startVoice = byteArrayOf(),
+            endText = trackEntity.endText ?: "",
+            endVoice = byteArrayOf(),
             state = if (trackEntity.isActive) TrackState.PLAYABLE else TrackState.DRAFT,
         )
     }

@@ -36,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.ctsetera.ikaranpu.domain.model.CharacterType
+import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,16 +47,16 @@ fun TrackEditor(
     enabled: Boolean = true,
     title: String,
     onTitleChange: (String) -> Unit,
-    selectedCharacter: String,
-    onCharacterChange: (String) -> Unit,
+    selectedCharacter: CharacterType,
+    onCharacterChange: (CharacterType) -> Unit,
     intervalSec: String,
     onIntervalSecChange: (String) -> Unit,
     textItems: List<String>,
     onTextChange: (index: Int, value: String) -> Unit,
     onDeleteText: (index: Int) -> Unit,
     onAddText: () -> Unit,
-    playOrder: String,
-    onPlayOrderChange: (String) -> Unit,
+    playOrder: PlayMode,
+    onPlayOrderChange: (PlayMode) -> Unit,
     startText: String,
     onStartTextChange: (String) -> Unit,
     endText: String,
@@ -93,7 +95,7 @@ fun TrackEditor(
             }
         ) {
             OutlinedTextField(
-                value = selectedCharacter,
+                value = "ずんだもん",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("キャラクター") },
@@ -109,11 +111,14 @@ fun TrackEditor(
                 expanded = characterExpanded,
                 onDismissRequest = { characterExpanded = false }
             ) {
-                listOf("ずんだもん", "四国めたん").forEach { item ->
+                mapOf(
+                    Pair(CharacterType.ZUNDAMON, "ずんだもん"),
+                    Pair(CharacterType.METAN, "四国めたん")
+                ).forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(item) },
+                        text = { Text(item.value) },
                         onClick = {
-                            onCharacterChange(item)
+                            onCharacterChange(item.key)
                             characterExpanded = false
                         }
                     )
@@ -182,7 +187,7 @@ fun TrackEditor(
             }
         ) {
             OutlinedTextField(
-                value = playOrder,
+                value = "順番に再生",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("再生順序") },
@@ -198,11 +203,14 @@ fun TrackEditor(
                 expanded = playOrderExpanded,
                 onDismissRequest = { playOrderExpanded = false }
             ) {
-                listOf("順番に再生", "ランダムに再生").forEach { item ->
+                mapOf(
+                    Pair(PlayMode.NORMAL, "順番に再生"),
+                    Pair(PlayMode.RANDOM, "ランダムに再生")
+                ).forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(item) },
+                        text = { Text(item.value) },
                         onClick = {
-                            onPlayOrderChange(item)
+                            onPlayOrderChange(item.key)
                             playOrderExpanded = false
                         }
                     )
@@ -266,7 +274,7 @@ fun TrackEditorPreview() {
         TrackEditor(
             title = "テストトラック",
             onTitleChange = {},
-            selectedCharacter = "ずんだもん",
+            selectedCharacter = CharacterType.ZUNDAMON,
             onCharacterChange = {},
             intervalSec = "5",
             onIntervalSecChange = {},
@@ -274,7 +282,7 @@ fun TrackEditorPreview() {
             onTextChange = { _, _ -> },
             onDeleteText = {},
             onAddText = {},
-            playOrder = "順番に再生",
+            playOrder = PlayMode.NORMAL,
             onPlayOrderChange = {},
             startText = "再生を開始します",
             onStartTextChange = {},

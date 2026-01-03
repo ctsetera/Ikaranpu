@@ -9,11 +9,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
+import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
@@ -23,6 +25,7 @@ import dev.ctsetera.ikaranpu.ui.screen.DraftScreen
 import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
+import dev.ctsetera.ikaranpu.ui.screen.TrackAddViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackListScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackListViewModel
@@ -161,6 +164,16 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         TrackAddScreen(
+                            viewModel = viewModel {
+                                TrackAddViewModel(
+                                    AddTrackUseCase(
+                                        TrackRepository(
+                                            (applicationContext as MyApplication).database.trackDao()
+                                        )
+                                    ),
+                                    createSavedStateHandle()
+                                )
+                            },
                             navController = navController
                         )
                     }
@@ -234,7 +247,9 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel {
                                     TrackPlayViewModel(
                                         GetTrackByTrackIdUseCase(
-                                            TrackRepository((applicationContext as MyApplication).database.trackDao())
+                                            TrackRepository(
+                                                (applicationContext as MyApplication).database.trackDao()
+                                            )
                                         ), trackId
                                     )
                                 },
