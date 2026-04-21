@@ -40,6 +40,9 @@ data class Track(
         require(trackName.length <= MAX_TRACK_NAME_LENGTH) {
             "Track name must be at most $MAX_TRACK_NAME_LENGTH characters"
         }
+        require(textList.any { it.isNotEmpty() }) {
+            "You must enter at least one text."
+        }
         textList.forEach { text ->
             require(text.length <= MAX_TEXT_LENGTH) {
                 "Each textList item must be <= $MAX_TEXT_LENGTH chars"

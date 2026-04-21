@@ -1,10 +1,10 @@
 package dev.ctsetera.ikaranpu
 
-import dev.ctsetera.ikaranpu.domain.model.TrackError
+import dev.ctsetera.ikaranpu.domain.model.Error
 
-fun TrackError.getMessageId(): Int {
+fun Error.getMessageId(): Int {
     return when (this) {
-        is TrackError.NotFound -> R.string.error_track_not_found
-        is TrackError.DatabaseFailure -> R.string.error_database
+        is Error.TrackNotFound -> R.string.error_track_not_found
+        is Error.DatabaseFailure -> R.string.error_database
     }
 }

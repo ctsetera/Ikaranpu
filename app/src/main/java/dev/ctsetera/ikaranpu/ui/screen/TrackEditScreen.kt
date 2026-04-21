@@ -1,16 +1,38 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.dropUnlessStarted
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import dev.ctsetera.ikaranpu.ui.component.TrackEditor
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackEditScreen(navController: NavController, trackId: Long) {
-    /*
+fun TrackEditScreen(viewModel: TrackEditViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,52 +53,75 @@ fun TrackEditScreen(navController: NavController, trackId: Long) {
             )
         }
     ) { padding ->
-        var title by rememberSaveable { mutableStateOf("") }
-        var character by rememberSaveable { mutableStateOf("ずんだもん") }
-        var intervalSec by rememberSaveable { mutableStateOf("0") }
-        var textList by rememberSaveable { mutableStateOf(listOf("")) }
-        var playOrder by rememberSaveable { mutableStateOf("順番に再生") }
-        var startText by rememberSaveable { mutableStateOf("") }
-        var endText by rememberSaveable { mutableStateOf("") }
+        val uiState by viewModel.uiState.collectAsState()
+
+        when {
+            uiState.isInProgress -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            uiState.errorMessageId != null -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+
+            else -> {
+
+            }
+        }
 
         TrackEditor(
             modifier = Modifier.padding(padding),
-            title = title,
-            onTitleChange = { title = it },
-            selectedCharacter = character,
-            onCharacterChange = { character = it },
-            intervalSec = intervalSec,
-            onIntervalSecChange = { intervalSec = it },
-            textItems = textList,
-            onTextChange = { i, v -> textList = textList.toMutableList().also { it[i] = v } },
-            onDeleteText = { i ->
-                textList =
-                    textList.toMutableList().also {
-                        if (it.size == 1) {
-                            it[i] = ""
-                        } else {
-                            it.removeAt(i)
-                        }
-                    }
+            enabled = !uiState.isInProgress,
+            title = uiState.trackName,
+            onTitleChange = { viewModel.changeTrackName(it) },
+            selectedCharacter = uiState.characterType,
+            onCharacterChange = { viewModel.changeCharacterType(it) },
+            intervalSec = uiState.interval,
+            onIntervalSecChange = { viewModel.changeInterval(it) },
+            textItems = uiState.textList,
+            onTextChange = { i, v ->
+                viewModel.changeTextListItem(i, v)
             },
-            onAddText = { if (textList.size < 10) textList = textList + "" },
-            playOrder = playOrder,
-            onPlayOrderChange = { playOrder = it },
-            startText = startText,
-            onStartTextChange = { startText = it },
-            endText = endText,
-            onEndTextChange = { endText = it },
-            onSave = { /* 保存処理 */ },
-            onSaveToDraft = { /* 下書きに保存する処理 */ }
+            onDeleteText = { i ->
+                if (uiState.textList.size == 1) {
+                    viewModel.changeTextListItem(i, "")
+                } else {
+                    viewModel.removeTextListItem(i)
+                }
+            },
+            onAddText = { viewModel.addTextListItem() },
+            playOrder = uiState.playMode,
+            onPlayOrderChange = { viewModel.changePlayMode(it) },
+            startText = uiState.startText,
+            onStartTextChange = { viewModel.changeStartText(it) },
+            endText = uiState.endText,
+            onEndTextChange = { viewModel.changeEndText(it) },
+            onSave = { if (!uiState.isInProgress) viewModel.updateTrack(true) },
+            onSaveToDraft = { if (!uiState.isInProgress) viewModel.updateTrack(false) },
+            validateTrackName = uiState.validateTrackName?.asString(),
+            validateTextListItems = uiState.validateTextList.map { it?.asString() },
+            validateInterval = uiState.validateInterval?.asString(),
         )
+
+        if (uiState.isSavedSuccess) {
+            navController.popBackStack()
+        }
     }
-     */
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TrackEditScreenPreview() {
     IkaranpuTheme {
-        TrackEditScreen(navController = rememberNavController(), 1)
+        TrackEditScreen(viewModel = viewModel(), navController = rememberNavController())
     }
 }

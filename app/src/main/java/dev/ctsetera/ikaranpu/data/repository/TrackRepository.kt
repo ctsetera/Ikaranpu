@@ -6,14 +6,14 @@ import com.github.michaelbull.result.Result
 import dev.ctsetera.ikaranpu.data.local.db.dao.TrackDao
 import dev.ctsetera.ikaranpu.data.local.db.entity.TrackEntity
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
+import dev.ctsetera.ikaranpu.domain.model.Error
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
-import dev.ctsetera.ikaranpu.domain.model.TrackError
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.repository.ITrackRepository
 
 class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
-    override suspend fun getTracks(): Result<List<Track>, TrackError> {
+    override suspend fun getTracks(): Result<List<Track>, Error> {
         return runCatching {
             trackDao.getTracks()
         }.fold(
@@ -21,16 +21,16 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 if (tracks.isNotEmpty()) {
                     Ok(tracks.map { convertEntityToModel(it) })
                 } else {
-                    Err(TrackError.NotFound)
+                    Err(Error.TrackNotFound)
                 }
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
 
-    override suspend fun getDraftTracks(): Result<List<Track>, TrackError> {
+    override suspend fun getDraftTracks(): Result<List<Track>, Error> {
         return runCatching {
             trackDao.getDraftTracks()
         }.fold(
@@ -38,31 +38,31 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 if (drafts.isNotEmpty()) {
                     Ok(drafts.map { convertEntityToModel(it) })
                 } else {
-                    Err(TrackError.NotFound)
+                    Err(Error.TrackNotFound)
                 }
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
 
-    override suspend fun getTrack(trackId: Long): Result<Track, TrackError> {
+    override suspend fun getTrack(trackId: Long): Result<Track, Error> {
         return runCatching {
             trackDao.findByTrackId(trackId = trackId)
         }.fold(
             onSuccess = { track ->
                 track?.let {
                     Ok(convertEntityToModel(it))
-                } ?: Err(TrackError.NotFound)
+                } ?: Err(Error.TrackNotFound)
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
 
-    override suspend fun addTrack(track: Track): Result<Long, TrackError> {
+    override suspend fun addTrack(track: Track): Result<Long, Error> {
         return runCatching {
             trackDao.insert(convertModelToEntity(track))
         }.fold(
@@ -70,12 +70,12 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
 
-    override suspend fun updateTrack(track: Track): Result<Unit, TrackError> {
+    override suspend fun updateTrack(track: Track): Result<Unit, Error> {
         return runCatching {
             trackDao.update(convertModelToEntity(track))
         }.fold(
@@ -83,12 +83,12 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
 
-    override suspend fun deleteTrack(trackId: Long): Result<Unit, TrackError> {
+    override suspend fun deleteTrack(trackId: Long): Result<Unit, Error> {
         return runCatching {
             trackDao.deleteByTrackId(trackId)
         }.fold(
@@ -96,7 +96,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Err(TrackError.DatabaseFailure)
+                Err(Error.DatabaseFailure)
             }
         )
     }
@@ -165,16 +165,16 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 CharacterType.ZUNDAMON -> 0
                 CharacterType.METAN -> 1
             },
-            text1 = textArray[0],
-            text2 = textArray[1],
-            text3 = textArray[2],
-            text4 = textArray[3],
-            text5 = textArray[4],
-            text6 = textArray[5],
-            text7 = textArray[6],
-            text8 = textArray[7],
-            text9 = textArray[8],
-            text10 = textArray[9],
+            text1 = if (textArray[0] == "") null else textArray[0],
+            text2 = if (textArray[1] == "") null else textArray[1],
+            text3 = if (textArray[2] == "") null else textArray[2],
+            text4 = if (textArray[3] == "") null else textArray[3],
+            text5 = if (textArray[4] == "") null else textArray[4],
+            text6 = if (textArray[5] == "") null else textArray[5],
+            text7 = if (textArray[6] == "") null else textArray[6],
+            text8 = if (textArray[7] == "") null else textArray[7],
+            text9 = if (textArray[8] == "") null else textArray[8],
+            text10 = if (textArray[9] == "") null else textArray[9],
             voice1 = voiceArray[0],
             voice2 = voiceArray[1],
             voice3 = voiceArray[2],

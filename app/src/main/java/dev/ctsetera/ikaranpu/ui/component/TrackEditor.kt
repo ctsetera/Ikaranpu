@@ -63,6 +63,9 @@ fun TrackEditor(
     onEndTextChange: (String) -> Unit,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
+    validateTrackName: String? = null,
+    validateTextListItems: List<String?> = listOf(),
+    validateInterval: String? = null,
 ) {
     val scrollState = rememberScrollState()
 
@@ -81,12 +84,23 @@ fun TrackEditor(
             value = title,
             onValueChange = { if (enabled) onTitleChange(it) },
             label = { Text("タイトル") },
+            isError = validateTrackName != null,
             enabled = enabled,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            supportingText = {
+                Text(
+                    text = validateTrackName ?: "",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         )
         Spacer(Modifier.height(16.dp))
 
         // ▶ Character
+        val characterMap = mapOf(
+            CharacterType.ZUNDAMON to "ずんだもん",
+            CharacterType.METAN to "四国めたん"
+        )
         var characterExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
             expanded = characterExpanded && enabled,
@@ -95,7 +109,7 @@ fun TrackEditor(
             }
         ) {
             OutlinedTextField(
-                value = "ずんだもん",
+                value = characterMap[selectedCharacter] ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("キャラクター") },
@@ -130,11 +144,18 @@ fun TrackEditor(
         // ▶ Interval
         OutlinedTextField(
             value = intervalSec,
-            onValueChange = { if (enabled) onIntervalSecChange(it) },
+            onValueChange = { if (enabled && it.length < 4) onIntervalSecChange(it) },
             label = { Text("リピート間隔（秒）") },
+            isError = validateInterval != null,
             enabled = enabled,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            supportingText = {
+                Text(
+                    text = validateInterval ?: "",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         )
         Spacer(Modifier.height(24.dp))
 
@@ -169,8 +190,15 @@ fun TrackEditor(
                     value = text,
                     onValueChange = { if (enabled) onTextChange(i, it) },
                     enabled = enabled,
+                    isError = validateTextListItems[i] != null,
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("テキスト${i + 1}を入力") }
+                    placeholder = { Text("テキスト${i + 1}を入力") },
+                    supportingText = {
+                        Text(
+                            text = validateTextListItems[i] ?: "",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -179,6 +207,10 @@ fun TrackEditor(
         Spacer(Modifier.height(24.dp))
 
         // ▶ Play order
+        val playOrderMap = mapOf(
+            PlayMode.NORMAL to "順番に再生",
+            PlayMode.RANDOM to "ランダムに再生"
+        )
         var playOrderExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
             expanded = playOrderExpanded && enabled,
@@ -187,7 +219,7 @@ fun TrackEditor(
             }
         ) {
             OutlinedTextField(
-                value = "順番に再生",
+                value = playOrderMap[playOrder] ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("再生順序") },
@@ -240,28 +272,14 @@ fun TrackEditor(
         )
         Spacer(Modifier.height(32.dp))
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(
-                onClick = onSaveToDraft,
-                enabled = enabled,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(56.dp)
-            ) {
-                Text("下書きに保存")
-            }
-
-            Spacer(Modifier.width(16.dp))
-
-            Button(
-                onClick = onSave,
-                enabled = enabled,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(56.dp)
-            ) {
-                Text("保存")
-            }
+        Button(
+            onClick = onSave,
+            enabled = enabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("保存")
         }
     }
 }

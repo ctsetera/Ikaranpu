@@ -15,9 +15,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -52,14 +49,6 @@ fun TrackAddScreen(viewModel: TrackAddViewModel, navController: NavController) {
             )
         }
     ) { padding ->
-        var title by rememberSaveable { mutableStateOf("") }
-        var character by rememberSaveable { mutableStateOf("ずんだもん") }
-        var intervalSec by rememberSaveable { mutableStateOf("0") }
-        var textList by rememberSaveable { mutableStateOf(listOf("")) }
-        var playOrder by rememberSaveable { mutableStateOf("順番に再生") }
-        var startText by rememberSaveable { mutableStateOf("") }
-        var endText by rememberSaveable { mutableStateOf("") }
-
         val uiState by viewModel.uiState.collectAsState()
 
         when {
@@ -78,6 +67,7 @@ fun TrackAddScreen(viewModel: TrackAddViewModel, navController: NavController) {
 
         TrackEditor(
             modifier = Modifier.padding(padding),
+            enabled = !uiState.isInProgress,
             title = uiState.trackName,
             onTitleChange = { viewModel.changeTrackName(it) },
             selectedCharacter = uiState.characterType,
@@ -102,9 +92,20 @@ fun TrackAddScreen(viewModel: TrackAddViewModel, navController: NavController) {
             onStartTextChange = { viewModel.changeStartText(it) },
             endText = uiState.endText,
             onEndTextChange = { viewModel.changeEndText(it) },
-            onSave = { viewModel.addTrack(true) },
-            onSaveToDraft = { viewModel.addTrack(false) }
+            onSave = {
+                if (!uiState.isInProgress) viewModel.addTrack(true)
+            },
+            onSaveToDraft = {
+                if (!uiState.isInProgress) viewModel.addTrack(false)
+            },
+            validateTrackName = uiState.validateTrackName?.asString(),
+            validateTextListItems = uiState.validateTextList.map { it?.asString() },
+            validateInterval = uiState.validateInterval?.asString(),
         )
+
+        if (uiState.isSavedSuccess) {
+            navController.popBackStack()
+        }
     }
 }
 

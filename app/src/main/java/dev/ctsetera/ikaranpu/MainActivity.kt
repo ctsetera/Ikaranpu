@@ -20,6 +20,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.DraftScreen
 import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
@@ -27,6 +28,7 @@ import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
+import dev.ctsetera.ikaranpu.ui.screen.TrackEditViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackListScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackListViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackPlayScreen
@@ -208,8 +210,23 @@ class MainActivity : ComponentActivity() {
 
                         trackId?.let {
                             TrackEditScreen(
-                                navController = navController,
-                                trackId = trackId,
+                                viewModel = viewModel {
+                                    TrackEditViewModel(
+                                        trackId,
+                                        GetTrackByTrackIdUseCase(
+                                            TrackRepository(
+                                                (applicationContext as MyApplication).database.trackDao()
+                                            )
+                                        ),
+                                        UpdateTrackUseCase(
+                                            TrackRepository(
+                                                (applicationContext as MyApplication).database.trackDao()
+                                            )
+                                        ),
+                                        createSavedStateHandle()
+                                    )
+                                },
+                                navController = navController
                             )
                         }
                     }

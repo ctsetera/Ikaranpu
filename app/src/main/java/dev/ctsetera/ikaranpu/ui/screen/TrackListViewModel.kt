@@ -21,11 +21,7 @@ class TrackListViewModel(
     private val _uiState = MutableStateFlow(TrackListUiState())
     val uiState: StateFlow<TrackListUiState> = _uiState
 
-    init {
-        loadTracks()
-    }
-
-    private fun loadTracks() {
+    fun loadTracks() {
         viewModelScope.launch {
             getTrackListUseCase()
                 .onSuccess { tracks ->

@@ -20,11 +20,7 @@ class DraftViewModel(
     private val _uiState = MutableStateFlow(DraftListUiState())
     val uiState: StateFlow<DraftListUiState> = _uiState
 
-    init {
-        loadTracks()
-    }
-
-    private fun loadTracks() {
+    fun loadTracks() {
         viewModelScope.launch {
             getDraftListUseCase()
                 .onSuccess { drafts ->

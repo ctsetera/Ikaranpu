@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -67,10 +66,6 @@ fun TrackPlayScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 when {
-                    uiState.isLoading -> {
-                        CircularProgressIndicator()
-                    }
-
                     uiState.errorMessageId != null -> {
                         Toast.makeText(
                             LocalContext.current,
@@ -130,6 +125,7 @@ fun TrackPlayScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()           // ← 横幅いっぱい
                     .padding(16.dp)           // ← 画面端との余白を付ける（任意）
+                    .height(56.dp)
             ) {
                 Text(text = "停止")
             }

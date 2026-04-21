@@ -1,6 +1,7 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -28,16 +28,21 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.dropUnlessStarted
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -109,16 +114,21 @@ fun TrackListScreen(
                 val uiState by viewModel.uiState.collectAsState()
 
                 when {
-                    uiState.isLoading -> {
-                        CircularProgressIndicator()
-                    }
-
                     uiState.errorMessageId != null -> {
-                        Toast.makeText(
-                            LocalContext.current,
-                            "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
-                            Toast.LENGTH_LONG,
-                        ).show()
+                        if (uiState.errorMessageId == R.string.error_track_not_found) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(R.string.error_track_not_found))
+                            }
+                        } else {
+                            Toast.makeText(
+                                LocalContext.current,
+                                "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
                     }
 
                     else -> {
@@ -145,6 +155,14 @@ fun TrackListScreen(
                     }
                 }
             }
+        }
+    }
+
+    // この画面が開かれたとき or この画面に戻ってきたときにリストを再取得
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.loadTracks()
         }
     }
 }
