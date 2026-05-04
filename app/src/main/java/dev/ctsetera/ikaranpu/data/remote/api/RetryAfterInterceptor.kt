@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu.data.remote
+package dev.ctsetera.ikaranpu.data.remote.api
 
 import okhttp3.Interceptor
 import okhttp3.Response

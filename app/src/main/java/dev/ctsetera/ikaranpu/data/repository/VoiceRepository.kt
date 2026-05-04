@@ -3,8 +3,8 @@ package dev.ctsetera.ikaranpu.data.repository
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import dev.ctsetera.ikaranpu.data.remote.VoiceApiService
-import dev.ctsetera.ikaranpu.data.remote.toApiId
+import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiService
+import dev.ctsetera.ikaranpu.data.remote.api.toApiId
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.Error
 import dev.ctsetera.ikaranpu.domain.repository.IVoiceRepository

@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu.data.remote
+package dev.ctsetera.ikaranpu.data.remote.api
 
 data class VoiceSynthesizeStatusResponse(
     val success: Boolean,

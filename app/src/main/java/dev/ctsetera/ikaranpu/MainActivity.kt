@@ -14,8 +14,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dev.ctsetera.ikaranpu.data.remote.VoiceApiClient
-import dev.ctsetera.ikaranpu.data.remote.VoiceApiService
+import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiClient
+import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiService
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
 import dev.ctsetera.ikaranpu.data.repository.VoiceRepository
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
