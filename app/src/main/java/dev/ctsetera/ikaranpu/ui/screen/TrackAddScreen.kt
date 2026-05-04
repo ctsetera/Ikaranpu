@@ -119,7 +119,7 @@ fun TrackAddScreenContent(
 
         TrackEditor(
             modifier = Modifier.padding(padding),
-            enabled = true,
+            enabled = !uiState.isInProgress,
             title = uiState.trackName,
             onTitleChange = onTitleChange,
             selectedCharacter = uiState.characterType,
