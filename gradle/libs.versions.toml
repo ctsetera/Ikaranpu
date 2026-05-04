@@ -16,6 +16,7 @@ foundationLayoutAndroid = "1.7.6"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 kotlin-result = "1.1.18"
+runtimeAnnotationAndroid = "1.10.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ver
 okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 kotlin-result = { group = "com.michael-bull.kotlin-result", name = "kotlin-result", version.ref = "kotlin-result" }
+androidx-runtime-annotation-android = { group = "androidx.compose.runtime", name = "runtime-annotation-android", version.ref = "runtimeAnnotationAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

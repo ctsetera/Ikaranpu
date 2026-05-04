@@ -14,7 +14,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dev.ctsetera.ikaranpu.data.remote.VoiceApiClient
+import dev.ctsetera.ikaranpu.data.remote.VoiceApiService
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
+import dev.ctsetera.ikaranpu.data.repository.VoiceRepository
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
@@ -171,7 +174,10 @@ class MainActivity : ComponentActivity() {
                                     AddTrackUseCase(
                                         TrackRepository(
                                             (applicationContext as MyApplication).database.trackDao()
-                                        )
+                                        ),
+                                        VoiceRepository(
+                                            VoiceApiClient.retrofit.create(VoiceApiService::class.java),
+                                        ),
                                     ),
                                     createSavedStateHandle()
                                 )
@@ -221,7 +227,10 @@ class MainActivity : ComponentActivity() {
                                         UpdateTrackUseCase(
                                             TrackRepository(
                                                 (applicationContext as MyApplication).database.trackDao()
-                                            )
+                                            ),
+                                            VoiceRepository(
+                                                VoiceApiClient.retrofit.create(VoiceApiService::class.java),
+                                            ),
                                         ),
                                         createSavedStateHandle()
                                     )

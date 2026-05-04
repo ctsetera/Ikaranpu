@@ -9,7 +9,6 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.UiText
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
-import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
@@ -205,26 +204,17 @@ class TrackEditViewModel(
                 state.copy(isInProgress = true)
             }
 
-            // 音声ファイルをダウンロード
-
-            // Model作成
-
-            val track = Track(
+            updateTrackUseCase(
                 trackId = trackId,
                 trackName = _uiState.value.trackName,
                 characterType = _uiState.value.characterType,
                 textList = _uiState.value.textList,
-                voiceList = listOf(), // TODO()
                 interval = _uiState.value.interval.toIntOrNull() ?: 0,
                 playMode = _uiState.value.playMode,
                 startText = _uiState.value.startText,
-                startVoice = byteArrayOf(), // TODO()
                 endText = _uiState.value.endText,
-                endVoice = byteArrayOf(), // TODO()
                 state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
             )
-
-            updateTrackUseCase(track)
                 .onSuccess {
                     _uiState.update { state ->
                         state.copy(isSavedSuccess = true)
@@ -280,20 +270,16 @@ class TrackEditViewModel(
 
         if (textErrors.any { it != null }) hasError = true
 
-
         // --- Interval ---
         val intervalInt = state.interval.toIntOrNull()
 
         val intervalError =
             when {
-                state.interval.toIntOrNull() == null ->
-                    UiText.StringResource(R.string.validation_track_interval_num)
-
                 state.interval.isBlank() ->
                     UiText.StringResource(R.string.validation_track_interval_required)
 
                 intervalInt == null ->
-                    UiText.StringResource(R.string.validation_track_interval_required)
+                    UiText.StringResource(R.string.validation_track_interval_num)
 
                 intervalInt < 1 ->
                     UiText.StringResource(R.string.validation_track_interval_min_1)

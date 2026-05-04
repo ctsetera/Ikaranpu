@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlin.result)
+    implementation(libs.androidx.runtime.annotation.android)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

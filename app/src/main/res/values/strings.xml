@@ -2,6 +2,8 @@
     <string name="app_name">Ikaranpu</string>
     <string name="error_database">データベースエラーが発生しました</string>
     <string name="error_track_not_found">トラックが見つかりません</string>
+    <string name="error_connection_failed">通信に失敗しました</string>
+    <string name="error_voice_empty">音声ファイルの取得に失敗しました</string>
     <string name="validation_track_name_required">トラック名は必須です</string>
     <string name="validation_track_name_max_50">トラック名は50文字を越えてはいけません</string>
     <string name="validation_track_list_item_required">テキストは必ず1つ以上入力する必要があります</string>
