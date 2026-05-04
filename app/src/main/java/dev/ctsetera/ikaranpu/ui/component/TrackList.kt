@@ -267,8 +267,7 @@ fun DeleteTrackConfirmDialog(
     )
 }
 
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun TrackItemPreview() {
     IkaranpuTheme {

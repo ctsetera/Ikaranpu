@@ -285,7 +285,7 @@ fun TrackEditor(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun TrackEditorPreview() {
     IkaranpuTheme {

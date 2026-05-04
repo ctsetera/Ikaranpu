@@ -26,19 +26,63 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
+import dev.ctsetera.ikaranpu.ui.state.DraftListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+
+@Composable
+fun DraftListScreen(
+    viewModel: DraftViewModel,
+    navController: NavController,
+) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+
+    // エラーがあればトーストで表示
+    val errorMessageId = uiState.errorMessageId
+    LaunchedEffect(errorMessageId) {
+        errorMessageId?.let {
+            Toast.makeText(
+                context,
+                context.getString(it),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    DraftListScreenContent(
+        uiState = uiState,
+        onBack = { navController.popBackStack() },
+        onEdit = { trackId ->
+            navController.navigate(
+                Screen.TrackEdit.createRoute(trackId)
+            )
+        },
+        onDelete = { viewModel.deleteTrack(it) },
+        onPlay = {},
+    )
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.loadTracks()
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DraftScreen(viewModel: DraftViewModel, navController: NavController) {
+fun DraftListScreenContent(
+    uiState: DraftListUiState,
+    onBack: () -> Unit,
+    onEdit: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onPlay: (Long) -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,12 +92,11 @@ fun DraftScreen(viewModel: DraftViewModel, navController: NavController) {
                 ),
                 title = { Text("下書き") },
                 navigationIcon = {
-                    IconButton(
-                        onClick = dropUnlessStarted {
-                            navController.popBackStack()
-                        },
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "戻る"
+                        )
                     }
                 }
             )
@@ -64,7 +107,6 @@ fun DraftScreen(viewModel: DraftViewModel, navController: NavController) {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            val uiState by viewModel.uiState.collectAsState()
 
             when {
                 uiState.errorMessageId != null -> {
@@ -75,51 +117,35 @@ fun DraftScreen(viewModel: DraftViewModel, navController: NavController) {
                         ) {
                             Text(text = stringResource(R.string.error_track_not_found))
                         }
-                    } else {
-                        Toast.makeText(
-                            LocalContext.current,
-                            "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
-                            Toast.LENGTH_SHORT,
-                        ).show()
                     }
                 }
 
                 else -> {
                     TrackList(
                         trackList = uiState.drafts,
-                        onEdit = { trackId ->
-                            navController.navigate(
-                                Screen.TrackEdit.createRoute(
-                                    trackId
-                                )
-                            )
-                        },
-                        onDelete = { trackId ->
-                            viewModel.deleteTrack(trackId)
-                        },
-                        onPlay = {},
+                        onEdit = onEdit,
+                        onDelete = onDelete,
+                        onPlay = onPlay,
                     )
                 }
             }
         }
     }
-
-    // この画面が開かれたとき or この画面に戻ってきたときにリストを再取得
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.loadTracks()
-        }
-    }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun DraftScreenPreview() {
+fun DraftListScreenPreview() {
     IkaranpuTheme {
-        DraftScreen(
-            viewModel = viewModel(),
-            navController = rememberNavController()
+        DraftListScreenContent(
+            uiState = DraftListUiState(
+                drafts = listOf(),
+                errorMessageId = null
+            ),
+            onBack = {},
+            onEdit = {},
+            onDelete = {},
+            onPlay = {},
         )
     }
 }

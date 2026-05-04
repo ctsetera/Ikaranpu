@@ -41,22 +41,65 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
+import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackListScreen(
     viewModel: TrackListViewModel,
     navController: NavController,
+) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+
+    // エラーがあればトーストで表示
+    val errorMessageId = uiState.errorMessageId
+    LaunchedEffect(errorMessageId) {
+        errorMessageId?.let {
+            Toast.makeText(
+                context,
+                context.getString(it),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    TrackListScreenContent(
+        uiState = uiState,
+        onOpenDrawer = {},
+        onNavigateAdd = { navController.navigate(it) },
+        onEdit = { trackId ->
+            navController.navigate(Screen.TrackEdit.createRoute(trackId))
+        },
+        onDelete = { viewModel.deleteTrack(it) },
+        onPlay = { trackId ->
+            navController.navigate(Screen.TrackPlay.createRoute(trackId))
+        }
+    )
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.loadTracks()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrackListScreenContent(
+    uiState: TrackListUiState,
+    onOpenDrawer: () -> Unit,
+    onNavigateAdd: (String) -> Unit,
+    onEdit: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onPlay: (Long) -> Unit,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -69,7 +112,7 @@ fun TrackListScreen(
                     currentRoute = Screen.Home.route
                 ) { screen ->
                     if (screen.route != Screen.Home.route) {
-                        navController.navigate(screen.route)
+                        onNavigateAdd(screen.route)
                     }
                     scope.launch { drawerState.close() }
                 }
@@ -85,84 +128,46 @@ fun TrackListScreen(
                     ),
                     title = { Text("トラックリスト") },
                     navigationIcon = {
-                        IconButton(onClick = dropUnlessStarted {
-                            scope.launch { drawerState.open() }
-                        }) {
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } }
+                        ) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
                     actions = {
-                        IconButton(
-                            onClick = dropUnlessStarted {
-                                navController.navigate(Screen.TrackAdd.route)
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "追加",
-                            )
+                        IconButton(onClick = { onNavigateAdd(Screen.TrackAdd.route) }) {
+                            Icon(Icons.Default.Add, contentDescription = "追加")
                         }
                     }
                 )
             }
         ) { innerPadding ->
+
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                val uiState by viewModel.uiState.collectAsState()
-
                 when {
-                    uiState.errorMessageId != null -> {
-                        if (uiState.errorMessageId == R.string.error_track_not_found) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = stringResource(R.string.error_track_not_found))
-                            }
-                        } else {
-                            Toast.makeText(
-                                LocalContext.current,
-                                "Error: ${uiState.errorMessageId?.let { stringResource(it) }}",
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                    uiState.errorMessageId == R.string.error_track_not_found -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = stringResource(R.string.error_track_not_found))
                         }
                     }
 
                     else -> {
                         TrackList(
                             trackList = uiState.tracks,
-                            onEdit = { trackId ->
-                                navController.navigate(
-                                    Screen.TrackEdit.createRoute(
-                                        trackId
-                                    )
-                                )
-                            },
-                            onDelete = { trackId ->
-                                viewModel.deleteTrack(trackId)
-                            },
-                            onPlay = { trackId ->
-                                navController.navigate(
-                                    Screen.TrackPlay.createRoute(
-                                        trackId
-                                    )
-                                )
-                            },
+                            onEdit = onEdit,
+                            onDelete = onDelete,
+                            onPlay = onPlay,
                         )
                     }
                 }
             }
-        }
-    }
-
-    // この画面が開かれたとき or この画面に戻ってきたときにリストを再取得
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.loadTracks()
         }
     }
 }
@@ -193,9 +198,9 @@ fun DrawerContent(
                 },
                 label = { Text(screen.title) },
                 selected = currentRoute == screen.route,
-                onClick = dropUnlessStarted { onDestinationClicked(screen) },
+                onClick = { onDestinationClicked(screen) },
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-                shape = RoundedCornerShape(12.dp), // 角丸
+                shape = RoundedCornerShape(12.dp),
                 colors = NavigationDrawerItemDefaults.colors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     unselectedContainerColor = Color.Transparent
@@ -205,13 +210,20 @@ fun DrawerContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun TrackListScreenPreview() {
     IkaranpuTheme {
-        TrackListScreen(
-            viewModel = viewModel(),
-            navController = rememberNavController(),
+        TrackListScreenContent(
+            uiState = TrackListUiState(
+                tracks = emptyList(),
+                errorMessageId = null
+            ),
+            onOpenDrawer = {},
+            onNavigateAdd = {},
+            onEdit = {},
+            onDelete = {},
+            onPlay = {},
         )
     }
 }
