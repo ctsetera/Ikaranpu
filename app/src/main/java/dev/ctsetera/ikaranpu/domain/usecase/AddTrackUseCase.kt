@@ -23,20 +23,23 @@ class AddTrackUseCase(
         playMode: PlayMode,
         state: TrackState,
     ): Result<Long, Error> {
-        // ボイスをダウンロードする処理をテキストリスト分繰り返す
         val voiceList: ArrayList<ByteArray> = arrayListOf()
-        textList.forEach { text ->
-            if (text.isNotEmpty()) {
-                val tmpVoice = voiceRepository.generateAndDownload(
-                    text,
-                    characterType
-                )
-                // エラーであれば即返す
-                if (tmpVoice is Err<Error>) {
-                    return tmpVoice
+
+        if (state == TrackState.PLAYABLE) {
+            // ボイスをダウンロードする処理をテキストリスト分繰り返す
+            textList.forEach { text ->
+                if (text.isNotEmpty()) {
+                    val tmpVoice = voiceRepository.generateAndDownload(
+                        text,
+                        characterType
+                    )
+                    // エラーであれば即返す
+                    if (tmpVoice is Err<Error>) {
+                        return tmpVoice
+                    }
+                    // ボイス（ByteArray）をリストに追加
+                    voiceList.add((tmpVoice as Ok).value)
                 }
-                // ボイス（ByteArray）をリストに追加
-                voiceList.add((tmpVoice as Ok).value)
             }
         }
 

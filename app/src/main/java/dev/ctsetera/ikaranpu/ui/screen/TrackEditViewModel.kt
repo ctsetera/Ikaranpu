@@ -182,10 +182,12 @@ class TrackEditViewModel(
     fun updateTrack(
         isActive: Boolean,
     ) = viewModelScope.launch(Dispatchers.IO) {
-        if (!validateAll()) return@launch
-
         _uiState.update { state ->
             state.copy(isInProgress = true)
+        }
+
+        if (isActive) {
+            if (!validateAll()) return@launch
         }
 
         updateTrackUseCase(
