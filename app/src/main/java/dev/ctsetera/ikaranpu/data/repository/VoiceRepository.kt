@@ -4,7 +4,6 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import dev.ctsetera.ikaranpu.data.remote.VoiceApiService
-import dev.ctsetera.ikaranpu.data.remote.VoiceSynthesizeStatusResponse
 import dev.ctsetera.ikaranpu.data.remote.toApiId
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.Error
@@ -22,8 +21,9 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
     ): Result<ByteArray, Error> {
         return runCatching {
             // 最後のsynthesize呼び出しから5秒は待つ
-            if (System.currentTimeMillis() - lastSynthesizeTimeMillis < 5000L) {
-                delay(5000)
+            val currentTimeMillis = System.currentTimeMillis()
+            if (currentTimeMillis - lastSynthesizeTimeMillis < 5000L) {
+                delay(5000 - (currentTimeMillis - lastSynthesizeTimeMillis))
             }
 
             // ボイス生成をリクエスト
@@ -36,14 +36,12 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
             // synthesize完了時間を記録
             lastSynthesizeTimeMillis = System.currentTimeMillis()
 
-            var statusResponse =
-                VoiceSynthesizeStatusResponse(success = false, isAudioReady = false)
-            for (i in 1..3) {
+            while (true) {
                 // サーバ側でボイスが生成されるのを待つ
-                delay(100)
+                delay(2500)
 
                 // ボイスが生成されたかチェック
-                statusResponse = api.getAudioStatus(
+                val statusResponse = api.getAudioStatus(
                     url = response.audioStatusUrl,
                 )
                 if (!statusResponse.success) return Err(Error.ApiServerFailure)
@@ -52,11 +50,8 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
                 if (statusResponse.isAudioReady) break
 
                 // サーバ側でボイスが生成されるのを待つ
-                delay(900)
+                delay(2500)
             }
-
-            // 想定される時間内にボイスを生成できなかった場合は強制的に終了
-            if (!statusResponse.isAudioReady) return Err(Error.ApiServerFailure)
 
             // ボイスをダウンロード
             val audioResponse = api.downloadAudio(response.mp3DownloadUrl)

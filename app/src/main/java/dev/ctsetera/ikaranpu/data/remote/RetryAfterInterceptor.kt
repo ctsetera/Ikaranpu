@@ -4,9 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
-class RetryAfterInterceptor(
-    private val maxRetries: Int = 3,
-) : Interceptor {
+class RetryAfterInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -14,7 +12,7 @@ class RetryAfterInterceptor(
 
         var retryCount = 0
 
-        while (response.code == 429 && retryCount < maxRetries) {
+        while (response.code == 429) {
             val retryAfter = response.header("Retry-After")
 
             val waitMillis = parseRetryAfterToMillis(retryAfter)

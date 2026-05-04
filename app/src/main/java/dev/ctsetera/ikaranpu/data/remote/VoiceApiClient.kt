@@ -14,7 +14,7 @@ object VoiceApiClient {
     }
 
     private val client = OkHttpClient.Builder()
-        .addInterceptor(RetryAfterInterceptor(3))
+        .addInterceptor(RetryAfterInterceptor())
         .addInterceptor(logging)
         .build()
 
