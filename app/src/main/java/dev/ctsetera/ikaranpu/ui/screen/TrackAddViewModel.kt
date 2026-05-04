@@ -13,6 +13,7 @@ import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -29,8 +30,6 @@ class TrackAddViewModel(
         private const val KEY_TEXT_LIST = "text_list"
         private const val KEY_INTERVAL = "interval"
         private const val KEY_PLAY_MODE = "play_mode"
-        private const val KEY_START_TEXT = "start_text"
-        private const val KEY_END_TEXT = "end_text"
     }
 
     private val _uiState = MutableStateFlow(
@@ -40,8 +39,6 @@ class TrackAddViewModel(
             textList = savedStateHandle[KEY_TEXT_LIST] ?: listOf(""),
             interval = savedStateHandle[KEY_INTERVAL] ?: "",
             playMode = savedStateHandle[KEY_PLAY_MODE] ?: PlayMode.NORMAL,
-            startText = savedStateHandle[KEY_START_TEXT] ?: "",
-            endText = savedStateHandle[KEY_END_TEXT] ?: "",
         )
     )
     val uiState: StateFlow<TrackAddUiState> = _uiState
@@ -146,51 +143,39 @@ class TrackAddViewModel(
         _uiState.update { it.copy(playMode = playMode) }
     }
 
-    fun changeStartText(startText: String) {
-        savedStateHandle[KEY_START_TEXT] = startText
-        _uiState.update { it.copy(startText = startText) }
-    }
+    fun addTrack(
+        isActive: Boolean,
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        if (!validateAll()) return@launch
 
-    fun changeEndText(endText: String) {
-        savedStateHandle[KEY_END_TEXT] = endText
-        _uiState.update { it.copy(endText = endText) }
-    }
+        _uiState.update { state ->
+            state.copy(isInProgress = true)
+        }
 
-    fun addTrack(isActive: Boolean) {
-        viewModelScope.launch {
-            if (!validateAll()) return@launch
-
-            _uiState.update { state ->
-                state.copy(isInProgress = true)
+        addTrackUseCase(
+            trackName = _uiState.value.trackName,
+            characterType = _uiState.value.characterType,
+            textList = _uiState.value.textList,
+            interval = _uiState.value.interval.toIntOrNull() ?: 0,
+            playMode = _uiState.value.playMode,
+            state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
+        )
+            .onSuccess {
+                _uiState.update { state ->
+                    state.copy(isSavedSuccess = true)
+                }
+            }
+            .onFailure {
+                _uiState.update { state ->
+                    state.copy(
+                        isSavedSuccess = false,
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
             }
 
-            addTrackUseCase(
-                trackName = _uiState.value.trackName,
-                characterType = _uiState.value.characterType,
-                textList = _uiState.value.textList,
-                interval = _uiState.value.interval.toIntOrNull() ?: 0,
-                playMode = _uiState.value.playMode,
-                startText = _uiState.value.startText,
-                endText = _uiState.value.endText,
-                state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
-            )
-                .onSuccess {
-                    _uiState.update { state ->
-                        state.copy(isSavedSuccess = true)
-                    }
-                }
-                .onFailure {
-                    _uiState.update { state ->
-                        state.copy(
-                            isSavedSuccess = false,
-                            errorMessageId = it.getMessageId(),
-                        )
-                    }
-                }
-
-            _uiState.update { state ->
-                state.copy(isInProgress = false)
-            }
+        _uiState.update { state ->
+            state.copy(isInProgress = false)
         }
     }
 

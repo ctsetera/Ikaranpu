@@ -21,8 +21,6 @@ class AddTrackUseCase(
         textList: List<String>,
         interval: Int,
         playMode: PlayMode,
-        startText: String,
-        endText: String,
         state: TrackState,
     ): Result<Long, Error> {
         // ボイスをダウンロードする処理をテキストリスト分繰り返す
@@ -42,20 +40,6 @@ class AddTrackUseCase(
             }
         }
 
-        // 開始の音声があればダウンロードする
-        val tmpStartVoice = if (startText.isNotEmpty()) voiceRepository.generateAndDownload(
-            startText,
-            characterType
-        ) else null
-        if (tmpStartVoice is Err<Error>) return tmpStartVoice
-
-        // 終了の音声があればダウンロードする
-        val tmpEndVoice = if (endText.isNotEmpty()) voiceRepository.generateAndDownload(
-            endText,
-            characterType
-        ) else null
-        if (tmpEndVoice is Err<Error>) return tmpEndVoice
-
         // Track組み立て
         val track = Track(
             trackName = trackName,
@@ -64,11 +48,7 @@ class AddTrackUseCase(
             voiceList = voiceList.toList(),
             interval = interval,
             playMode = playMode,
-            startText = startText,
-            startVoice = if (tmpStartVoice is Ok) tmpStartVoice.value else byteArrayOf(),
-            endText = endText,
-            endVoice = if (tmpEndVoice is Ok) tmpEndVoice.value else byteArrayOf(),
-            state = state
+            state = state,
         )
 
         // 保存

@@ -14,6 +14,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.state.TrackEditUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -31,8 +32,6 @@ class TrackEditViewModel(
         private const val KEY_TEXT_LIST = "text_list"
         private const val KEY_INTERVAL = "interval"
         private const val KEY_PLAY_MODE = "play_mode"
-        private const val KEY_START_TEXT = "start_text"
-        private const val KEY_END_TEXT = "end_text"
     }
 
     private val _uiState = MutableStateFlow(
@@ -42,8 +41,6 @@ class TrackEditViewModel(
             textList = savedStateHandle[KEY_TEXT_LIST] ?: listOf(""),
             interval = savedStateHandle[KEY_INTERVAL] ?: "",
             playMode = savedStateHandle[KEY_PLAY_MODE] ?: PlayMode.NORMAL,
-            startText = savedStateHandle[KEY_START_TEXT] ?: "",
-            endText = savedStateHandle[KEY_END_TEXT] ?: "",
         )
     )
     val uiState: StateFlow<TrackEditUiState> = _uiState
@@ -52,37 +49,33 @@ class TrackEditViewModel(
         getTrack()
     }
 
-    private fun getTrack() {
-        viewModelScope.launch {
-            _uiState.update { state ->
-                state.copy(isInProgress = true)
+    private fun getTrack() = viewModelScope.launch(Dispatchers.IO) {
+        _uiState.update { state ->
+            state.copy(isInProgress = true)
+        }
+
+        getTrackByTrackIdUseCase(trackId)
+            .onSuccess { track ->
+                _uiState.update { state ->
+                    state.copy(
+                        trackName = track.trackName,
+                        characterType = track.characterType,
+                        textList = track.textList,
+                        interval = track.interval.toString(),
+                        playMode = track.playMode,
+                    )
+                }
+            }
+            .onFailure {
+                _uiState.update { state ->
+                    state.copy(
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
             }
 
-            getTrackByTrackIdUseCase(trackId)
-                .onSuccess { track ->
-                    _uiState.update { state ->
-                        state.copy(
-                            trackName = track.trackName,
-                            characterType = track.characterType,
-                            textList = track.textList,
-                            interval = track.interval.toString(),
-                            playMode = track.playMode,
-                            startText = track.startText,
-                            endText = track.endText,
-                        )
-                    }
-                }
-                .onFailure {
-                    _uiState.update { state ->
-                        state.copy(
-                            errorMessageId = it.getMessageId(),
-                        )
-                    }
-                }
-
-            _uiState.update { state ->
-                state.copy(isInProgress = false)
-            }
+        _uiState.update { state ->
+            state.copy(isInProgress = false)
         }
     }
 
@@ -186,52 +179,40 @@ class TrackEditViewModel(
         _uiState.update { it.copy(playMode = playMode) }
     }
 
-    fun changeStartText(startText: String) {
-        savedStateHandle[KEY_START_TEXT] = startText
-        _uiState.update { it.copy(startText = startText) }
-    }
+    fun updateTrack(
+        isActive: Boolean,
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        if (!validateAll()) return@launch
 
-    fun changeEndText(endText: String) {
-        savedStateHandle[KEY_END_TEXT] = endText
-        _uiState.update { it.copy(endText = endText) }
-    }
+        _uiState.update { state ->
+            state.copy(isInProgress = true)
+        }
 
-    fun updateTrack(isActive: Boolean) {
-        viewModelScope.launch {
-            if (!validateAll()) return@launch
-
-            _uiState.update { state ->
-                state.copy(isInProgress = true)
+        updateTrackUseCase(
+            trackId = trackId,
+            trackName = _uiState.value.trackName,
+            characterType = _uiState.value.characterType,
+            textList = _uiState.value.textList,
+            interval = _uiState.value.interval.toIntOrNull() ?: 0,
+            playMode = _uiState.value.playMode,
+            state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
+        )
+            .onSuccess {
+                _uiState.update { state ->
+                    state.copy(isSavedSuccess = true)
+                }
+            }
+            .onFailure {
+                _uiState.update { state ->
+                    state.copy(
+                        isSavedSuccess = false,
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
             }
 
-            updateTrackUseCase(
-                trackId = trackId,
-                trackName = _uiState.value.trackName,
-                characterType = _uiState.value.characterType,
-                textList = _uiState.value.textList,
-                interval = _uiState.value.interval.toIntOrNull() ?: 0,
-                playMode = _uiState.value.playMode,
-                startText = _uiState.value.startText,
-                endText = _uiState.value.endText,
-                state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
-            )
-                .onSuccess {
-                    _uiState.update { state ->
-                        state.copy(isSavedSuccess = true)
-                    }
-                }
-                .onFailure {
-                    _uiState.update { state ->
-                        state.copy(
-                            isSavedSuccess = false,
-                            errorMessageId = it.getMessageId(),
-                        )
-                    }
-                }
-
-            _uiState.update { state ->
-                state.copy(isInProgress = false)
-            }
+        _uiState.update { state ->
+            state.copy(isInProgress = false)
         }
     }
 

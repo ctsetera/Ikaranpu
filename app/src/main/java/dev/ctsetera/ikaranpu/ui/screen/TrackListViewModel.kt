@@ -8,6 +8,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -21,39 +22,35 @@ class TrackListViewModel(
     private val _uiState = MutableStateFlow(TrackListUiState())
     val uiState: StateFlow<TrackListUiState> = _uiState
 
-    fun loadTracks() {
-        viewModelScope.launch {
-            getTrackListUseCase()
-                .onSuccess { tracks ->
-                    _uiState.value = TrackListUiState(
-                        isLoading = false,
-                        tracks = tracks
-                    )
-                }
-                .onFailure {
-                    _uiState.value = TrackListUiState(
-                        isLoading = false,
-                        errorMessageId = it.getMessageId(),
-                    )
-                }
-        }
+    fun loadTracks() = viewModelScope.launch(Dispatchers.IO) {
+        getTrackListUseCase()
+            .onSuccess { tracks ->
+                _uiState.value = TrackListUiState(
+                    isLoading = false,
+                    tracks = tracks
+                )
+            }
+            .onFailure {
+                _uiState.value = TrackListUiState(
+                    isLoading = false,
+                    errorMessageId = it.getMessageId(),
+                )
+            }
     }
 
-    fun deleteTrack(trackId: Long) {
-        viewModelScope.launch {
-            // データ削除
-            deleteTrackUseCase(trackId)
-                .onSuccess {
-                    // UI更新
-                    _uiState.update { state ->
-                        state.copy(tracks = state.tracks.filter { it.trackId != trackId })
-                    }
+    fun deleteTrack(trackId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        // データ削除
+        deleteTrackUseCase(trackId)
+            .onSuccess {
+                // UI更新
+                _uiState.update { state ->
+                    state.copy(tracks = state.tracks.filter { it.trackId != trackId })
                 }
-                .onFailure {
-                    _uiState.value = TrackListUiState(
-                        errorMessageId = it.getMessageId(),
-                    )
-                }
-        }
+            }
+            .onFailure {
+                _uiState.value = TrackListUiState(
+                    errorMessageId = it.getMessageId(),
+                )
+            }
     }
 }

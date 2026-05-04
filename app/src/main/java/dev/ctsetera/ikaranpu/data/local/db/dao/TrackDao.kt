@@ -20,11 +20,11 @@ interface TrackDao {
     @Query("SELECT * FROM tracks")
     suspend fun getAll(): List<TrackEntity>
 
-    @Query("SELECT * FROM tracks where isActive = 1")
-    suspend fun getTracks(): List<TrackEntity>
+    @Query("SELECT * FROM tracks where isActive = 1 order by isPinned asc, updatedAt desc")
+    suspend fun getTracksOderByIsPinnedAscAndUpdatedAtDesc(): List<TrackEntity>
 
-    @Query("SELECT * FROM tracks where isActive = 0")
-    suspend fun getDraftTracks(): List<TrackEntity>
+    @Query("SELECT * FROM tracks where isActive = 0 order by updatedAt desc")
+    suspend fun getDraftTracksOderByUpdatedAtDesc(): List<TrackEntity>
 
     @Query("SELECT * FROM tracks WHERE track_id = :trackId")
     suspend fun findByTrackId(trackId: Long): TrackEntity?

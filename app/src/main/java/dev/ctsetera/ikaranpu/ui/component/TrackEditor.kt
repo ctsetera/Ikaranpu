@@ -57,10 +57,6 @@ fun TrackEditor(
     onAddText: () -> Unit,
     playOrder: PlayMode,
     onPlayOrderChange: (PlayMode) -> Unit,
-    startText: String,
-    onStartTextChange: (String) -> Unit,
-    endText: String,
-    onEndTextChange: (String) -> Unit,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
     validateTrackName: String? = null,
@@ -74,12 +70,6 @@ fun TrackEditor(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        Text(
-            text = "基本設定",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
         OutlinedTextField(
             value = title,
             onValueChange = { if (enabled) onTitleChange(it) },
@@ -251,26 +241,6 @@ fun TrackEditor(
         }
 
         Spacer(Modifier.height(32.dp))
-        Text("オプション設定（任意）", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = startText,
-            onValueChange = { if (enabled) onStartTextChange(it) },
-            enabled = enabled,
-            label = { Text("開始時に読み上げるテキスト") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = endText,
-            onValueChange = { if (enabled) onEndTextChange(it) },
-            enabled = enabled,
-            label = { Text("終了時に読み上げるテキスト") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(32.dp))
 
         Button(
             onClick = onSave,
@@ -302,10 +272,6 @@ fun TrackEditorPreview() {
             onAddText = {},
             playOrder = PlayMode.NORMAL,
             onPlayOrderChange = {},
-            startText = "再生を開始します",
-            onStartTextChange = {},
-            endText = "ありがとう",
-            onEndTextChange = {},
             onSave = {},
             onSaveToDraft = {},
         )

@@ -13,8 +13,6 @@ data class TrackAddUiState(
     val textList: List<String> = listOf(""),
     val interval: String = "",
     val playMode: PlayMode = PlayMode.NORMAL,
-    val startText: String = "",
-    val endText: String = "",
     val validateTrackName: UiText? = null,
     val validateTextList: List<UiText?> = listOf(
         null,

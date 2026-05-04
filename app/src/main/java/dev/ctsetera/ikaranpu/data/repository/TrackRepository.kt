@@ -1,5 +1,6 @@
 package dev.ctsetera.ikaranpu.data.repository
 
+import android.util.Log
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -15,16 +16,18 @@ import dev.ctsetera.ikaranpu.domain.repository.ITrackRepository
 class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
     override suspend fun getTracks(): Result<List<Track>, Error> {
         return runCatching {
-            trackDao.getTracks()
+            trackDao.getTracksOderByIsPinnedAscAndUpdatedAtDesc()
         }.fold(
             onSuccess = { tracks ->
                 if (tracks.isNotEmpty()) {
                     Ok(tracks.map { convertEntityToModel(it) })
                 } else {
+                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
                     Err(Error.TrackNotFound)
                 }
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -32,16 +35,18 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
 
     override suspend fun getDraftTracks(): Result<List<Track>, Error> {
         return runCatching {
-            trackDao.getDraftTracks()
+            trackDao.getDraftTracksOderByUpdatedAtDesc()
         }.fold(
             onSuccess = { drafts ->
                 if (drafts.isNotEmpty()) {
                     Ok(drafts.map { convertEntityToModel(it) })
                 } else {
+                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
                     Err(Error.TrackNotFound)
                 }
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -52,11 +57,15 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
             trackDao.findByTrackId(trackId = trackId)
         }.fold(
             onSuccess = { track ->
-                track?.let {
-                    Ok(convertEntityToModel(it))
-                } ?: Err(Error.TrackNotFound)
+                if (track == null) {
+                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
+                    Err(Error.TrackNotFound)
+                } else {
+                    Ok(convertEntityToModel(track))
+                }
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -70,6 +79,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -83,6 +93,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -96,6 +107,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
+                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
                 Err(Error.DatabaseFailure)
             }
         )
@@ -110,7 +122,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 1 -> CharacterType.METAN
                 else -> CharacterType.ZUNDAMON
             },
-            textList = listOfNotNull(
+            textList = listOf(
                 trackEntity.text1,
                 trackEntity.text2,
                 trackEntity.text3,
@@ -121,8 +133,8 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 trackEntity.text8,
                 trackEntity.text9,
                 trackEntity.text10
-            ),
-            voiceList = listOfNotNull(
+            ).filter { it.isNotEmpty() },
+            voiceList = listOf(
                 trackEntity.voice1,
                 trackEntity.voice2,
                 trackEntity.voice3,
@@ -133,18 +145,15 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 trackEntity.voice8,
                 trackEntity.voice9,
                 trackEntity.voice10
-            ),
+            ).filter { it.isNotEmpty() },
             interval = trackEntity.interval,
             playMode = when (trackEntity.playMode) {
                 0 -> PlayMode.NORMAL
                 1 -> PlayMode.RANDOM
                 else -> PlayMode.NORMAL
             },
-            startText = trackEntity.startText ?: "",
-            startVoice = byteArrayOf(),
-            endText = trackEntity.endText ?: "",
-            endVoice = byteArrayOf(),
             state = if (trackEntity.isActive) TrackState.PLAYABLE else TrackState.DRAFT,
+            isPinned = trackEntity.isPinned,
         )
     }
 
@@ -153,10 +162,12 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
         val voiceArray = arrayOfNulls<ByteArray>(10)
 
         track.textList
-            .filter { text -> text.isNotEmpty() }
             .mapIndexed { index, text -> textArray[index] = text }
         track.voiceList
             .mapIndexed { index, voice -> voiceArray[index] = voice }
+
+        val textList = textArray.map { it ?: "" }.toList()
+        val voiceList = voiceArray.map { it ?: byteArrayOf() }.toList()
 
         return TrackEntity(
             trackId = track.trackId,
@@ -165,34 +176,33 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 CharacterType.ZUNDAMON -> 0
                 CharacterType.METAN -> 1
             },
-            text1 = if (textArray[0] == "") null else textArray[0],
-            text2 = if (textArray[1] == "") null else textArray[1],
-            text3 = if (textArray[2] == "") null else textArray[2],
-            text4 = if (textArray[3] == "") null else textArray[3],
-            text5 = if (textArray[4] == "") null else textArray[4],
-            text6 = if (textArray[5] == "") null else textArray[5],
-            text7 = if (textArray[6] == "") null else textArray[6],
-            text8 = if (textArray[7] == "") null else textArray[7],
-            text9 = if (textArray[8] == "") null else textArray[8],
-            text10 = if (textArray[9] == "") null else textArray[9],
-            voice1 = voiceArray[0],
-            voice2 = voiceArray[1],
-            voice3 = voiceArray[2],
-            voice4 = voiceArray[3],
-            voice5 = voiceArray[4],
-            voice6 = voiceArray[5],
-            voice7 = voiceArray[6],
-            voice8 = voiceArray[7],
-            voice9 = voiceArray[8],
-            voice10 = voiceArray[9],
+            text1 = textList[0],
+            text2 = textList[1],
+            text3 = textList[2],
+            text4 = textList[3],
+            text5 = textList[4],
+            text6 = textList[5],
+            text7 = textList[6],
+            text8 = textList[7],
+            text9 = textList[8],
+            text10 = textList[9],
+            voice1 = voiceList[0],
+            voice2 = voiceList[1],
+            voice3 = voiceList[2],
+            voice4 = voiceList[3],
+            voice5 = voiceList[4],
+            voice6 = voiceList[5],
+            voice7 = voiceList[6],
+            voice8 = voiceList[7],
+            voice9 = voiceList[8],
+            voice10 = voiceList[9],
             interval = track.interval,
             playMode = when (track.playMode) {
                 PlayMode.NORMAL -> 0
                 PlayMode.RANDOM -> 1
             },
-            startText = track.startText,
-            endText = track.endText,
-            isActive = track.state == TrackState.PLAYABLE
+            isActive = track.state == TrackState.PLAYABLE,
+            isPinned = track.isPinned,
         )
     }
 }

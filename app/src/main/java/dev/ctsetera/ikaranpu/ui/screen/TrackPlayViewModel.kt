@@ -7,6 +7,7 @@ import com.github.michaelbull.result.onSuccess
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -24,41 +25,37 @@ class TrackPlayViewModel(
         playTrack()
     }
 
-    private fun playTrack() {
-        viewModelScope.launch {
-            // Load Track
-            getTrackByTrackIdUseCase(trackId)
-                .onSuccess { track ->
-                    _uiState.value = TrackPlayUiState(
-                        isLoading = false,
-                        track = track
-                    )
+    private fun playTrack() = viewModelScope.launch(Dispatchers.IO) {
+        // Load Track
+        getTrackByTrackIdUseCase(trackId)
+            .onSuccess { track ->
+                _uiState.value = TrackPlayUiState(
+                    isLoading = false,
+                    track = track
+                )
 
-                    // 再生
+                // 再生
 
-                    // UI更新
-                    _uiState.update { state ->
-                        state.copy(isPlaying = true)
-                    }
-                }.onFailure {
-                    _uiState.value = TrackPlayUiState(
-                        isLoading = false,
-                        errorMessageId = it.getMessageId(),
-                    )
+                // UI更新
+                _uiState.update { state ->
+                    state.copy(isPlaying = true)
                 }
-        }
+            }.onFailure {
+                _uiState.value = TrackPlayUiState(
+                    isLoading = false,
+                    errorMessageId = it.getMessageId(),
+                )
+            }
     }
 
     override fun onCleared() {
         stopTrack()
     }
 
-    private fun stopTrack() {
-        viewModelScope.launch {
-            // UI更新
-            _uiState.update { state ->
-                state.copy(isPlaying = false)
-            }
+    private fun stopTrack() = viewModelScope.launch(Dispatchers.IO) {
+        // UI更新
+        _uiState.update { state ->
+            state.copy(isPlaying = false)
         }
     }
 }
