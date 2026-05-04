@@ -60,7 +60,7 @@ fun TrackEditor(
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
     validateTrackName: String? = null,
-    validateTextListItems: List<String?> = listOf(),
+    validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
 ) {
     val scrollState = rememberScrollState()
@@ -168,6 +168,8 @@ fun TrackEditor(
         Spacer(Modifier.height(8.dp))
 
         textItems.forEachIndexed { i, text ->
+            val validationMessage = validateTextListItems.getOrNull(i)
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                     onClick = { onDeleteText(i) },
@@ -176,16 +178,17 @@ fun TrackEditor(
                     Icon(Icons.Default.Delete, contentDescription = "削除")
                 }
                 Spacer(Modifier.width(8.dp))
+
                 OutlinedTextField(
                     value = text,
                     onValueChange = { if (enabled) onTextChange(i, it) },
                     enabled = enabled,
-                    isError = validateTextListItems[i] != null,
+                    isError = validationMessage != null,
                     modifier = Modifier.weight(1f),
                     placeholder = { Text("テキスト${i + 1}を入力") },
                     supportingText = {
                         Text(
-                            text = validateTextListItems[i] ?: "",
+                            text = validationMessage ?: "",
                             color = MaterialTheme.colorScheme.error
                         )
                     }
