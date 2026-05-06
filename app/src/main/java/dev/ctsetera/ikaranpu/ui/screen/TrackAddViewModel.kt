@@ -151,7 +151,12 @@ class TrackAddViewModel(
         }
 
         if (isActive) {
-            if (!validateAll()) return@launch
+            if (!validateAll()) {
+                _uiState.update { state ->
+                    state.copy(isInProgress = false)
+                }
+                return@launch
+            }
         }
 
         addTrackUseCase(

@@ -187,7 +187,12 @@ class TrackEditViewModel(
         }
 
         if (isActive) {
-            if (!validateAll()) return@launch
+            if (!validateAll()) {
+                _uiState.update { state ->
+                    state.copy(isInProgress = false)
+                }
+                return@launch
+            }
         }
 
         updateTrackUseCase(
