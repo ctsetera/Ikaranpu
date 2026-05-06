@@ -5,11 +5,11 @@
     <string name="error_connection_failed">通信に失敗しました</string>
     <string name="error_voice_empty">音声ファイルの取得に失敗しました</string>
     <string name="validation_track_name_required">トラック名は必須です</string>
-    <string name="validation_track_name_max_50">トラック名は50文字を越えてはいけません</string>
+    <string name="validation_track_name_max_20">トラック名は20文字を越えてはいけません</string>
     <string name="validation_track_list_item_required">テキストは必ず1つ以上入力する必要があります</string>
-    <string name="validation_track_list_item_max_50">テキストは50文字を越えてはいけません</string>
+    <string name="validation_track_list_item_max_20">テキストは20文字を越えてはいけません</string>
     <string name="validation_track_interval_required">インターバルは必須です</string>
     <string name="validation_track_interval_num">インターバルは整数である必要があります</string>
-    <string name="validation_track_interval_min_1">インターバルは1より大きい整数である必要があります</string>
-    <string name="validation_track_interval_max_999">インターバルは1000より小さい整数である必要があります</string>
+    <string name="validation_track_interval_min_10">インターバルは10以上の整数である必要があります</string>
+    <string name="validation_track_interval_max_1000">インターバルは1000以下の整数である必要があります</string>
 </resources>

@@ -38,7 +38,7 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
 
             while (true) {
                 // サーバ側でボイスが生成されるのを待つ
-                delay(2500)
+                delay(100)
 
                 // ボイスが生成されたかチェック
                 val statusResponse = api.getAudioStatus(
@@ -50,7 +50,7 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
                 if (statusResponse.isAudioReady) break
 
                 // サーバ側でボイスが生成されるのを待つ
-                delay(2500)
+                delay(900)
             }
 
             // ボイスをダウンロード

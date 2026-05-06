@@ -85,8 +85,8 @@ class TrackEditViewModel(
             it.copy(
                 validateTrackName = if (trackName.isEmpty()) {
                     UiText.StringResource(R.string.validation_track_name_required)
-                } else if (trackName.length > 50) {
-                    UiText.StringResource(R.string.validation_track_name_max_50)
+                } else if (trackName.length > 20) {
+                    UiText.StringResource(R.string.validation_track_name_max_20)
                 } else {
                     null
                 }
@@ -112,8 +112,8 @@ class TrackEditViewModel(
         val validateTextList = _uiState.value.validateTextList.toMutableList()
         newList.forEachIndexed { i, v ->
             validateTextList[i] =
-                if (v.length > 50) {
-                    UiText.StringResource(R.string.validation_track_list_item_max_50)
+                if (v.length > 20) {
+                    UiText.StringResource(R.string.validation_track_list_item_max_20)
                 } else {
                     null
                 }
@@ -160,10 +160,10 @@ class TrackEditViewModel(
                     UiText.StringResource(R.string.validation_track_interval_required)
                 } else if (interval.toIntOrNull() == null) {
                     UiText.StringResource(R.string.validation_track_interval_num)
-                } else if (interval.toInt() < 1) {
-                    UiText.StringResource(R.string.validation_track_interval_min_1)
-                } else if (interval.toInt() > 999) {
-                    UiText.StringResource(R.string.validation_track_interval_max_999)
+                } else if (interval.toInt() < 10) {
+                    UiText.StringResource(R.string.validation_track_interval_min_10)
+                } else if (interval.toInt() > 1000) {
+                    UiText.StringResource(R.string.validation_track_interval_max_1000)
                 } else {
                     null
                 }
@@ -229,8 +229,8 @@ class TrackEditViewModel(
                 state.trackName.isBlank() ->
                     UiText.StringResource(R.string.validation_track_name_required)
 
-                state.trackName.length > 50 ->
-                    UiText.StringResource(R.string.validation_track_name_max_50)
+                state.trackName.length > 20 ->
+                    UiText.StringResource(R.string.validation_track_name_max_20)
 
                 else -> null
             }
@@ -241,8 +241,8 @@ class TrackEditViewModel(
         // --- TextList ---
         val textErrors = state.textList.mapIndexed { index, text ->
             when {
-                text.length > 50 ->
-                    UiText.StringResource(R.string.validation_track_list_item_max_50)
+                text.length > 20 ->
+                    UiText.StringResource(R.string.validation_track_list_item_max_20)
 
                 index == 0 && state.textList.none { it.isNotBlank() } ->
                     UiText.StringResource(R.string.validation_track_list_item_required)
@@ -264,11 +264,11 @@ class TrackEditViewModel(
                 intervalInt == null ->
                     UiText.StringResource(R.string.validation_track_interval_num)
 
-                intervalInt < 1 ->
-                    UiText.StringResource(R.string.validation_track_interval_min_1)
+                intervalInt < 10 ->
+                    UiText.StringResource(R.string.validation_track_interval_min_10)
 
-                intervalInt > 999 ->
-                    UiText.StringResource(R.string.validation_track_interval_max_999)
+                intervalInt > 1000 ->
+                    UiText.StringResource(R.string.validation_track_interval_max_1000)
 
                 else -> null
             }
