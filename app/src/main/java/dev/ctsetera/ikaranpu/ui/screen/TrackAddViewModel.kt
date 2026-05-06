@@ -85,9 +85,8 @@ class TrackAddViewModel(
         if (newList.none { it.isNotEmpty() }) {
             validateTextList[0] =
                 UiText.StringResource(R.string.validation_track_list_item_required)
-        } else {
-            validateTextList[0] = null
         }
+
         _uiState.update { state ->
             state.copy(validateTextList = validateTextList)
         }
