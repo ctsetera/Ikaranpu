@@ -30,4 +30,7 @@ data class TrackEditUiState(
     ),
     val validateInterval: UiText? = null,
     val errorMessageId: Int? = null,
+    val dialogSowing: Boolean = false,
+    val dialogProgressCurrent: Int = 0,
+    val dialogProgressTotal: Int = 10,
 )

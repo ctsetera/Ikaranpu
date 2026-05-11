@@ -23,6 +23,11 @@ class TrackListViewModel(
     val uiState: StateFlow<TrackListUiState> = _uiState
 
     fun loadTracks() = viewModelScope.launch(Dispatchers.IO) {
+        _uiState.value = TrackListUiState(
+            isLoading = true,
+            tracks = emptyList(),
+        )
+
         getTrackListUseCase()
             .onSuccess { tracks ->
                 _uiState.value = TrackListUiState(

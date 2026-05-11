@@ -9,6 +9,7 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.UiText
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.domain.model.TrackProgress
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
@@ -30,6 +31,50 @@ class TrackAddViewModel(
         private const val KEY_TEXT_LIST = "text_list"
         private const val KEY_INTERVAL = "interval"
         private const val KEY_PLAY_MODE = "play_mode"
+    }
+
+    init {
+        observeProgress()
+    }
+
+    private fun observeProgress() {
+        viewModelScope.launch(Dispatchers.IO) {
+            addTrackUseCase.progressFlow.collect { progress ->
+                when (progress) {
+                    is TrackProgress.Downloaded -> {
+                        if (progress.current == progress.total) {
+                            _uiState.update { state ->
+                                state.copy(
+                                    dialogSowing = false,
+                                    dialogProgressCurrent = 0,
+                                    dialogProgressTotal = 10,
+                                )
+                            }
+                        }
+                    }
+
+                    is TrackProgress.Downloading -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                dialogSowing = true,
+                                dialogProgressCurrent = progress.current,
+                                dialogProgressTotal = progress.total,
+                            )
+                        }
+                    }
+
+                    else -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                dialogSowing = false,
+                                dialogProgressCurrent = 0,
+                                dialogProgressTotal = 10,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private val _uiState = MutableStateFlow(
@@ -183,6 +228,11 @@ class TrackAddViewModel(
         _uiState.update { state ->
             state.copy(isInProgress = false)
         }
+    }
+
+    fun cancelAddTrack() {
+        // 実行中のトラック追加処理をキャンセル
+        // TODO()
     }
 
     private fun validateAll(): Boolean {

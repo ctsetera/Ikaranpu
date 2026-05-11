@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.ui.component.SynthesizeProgressDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -53,6 +54,17 @@ fun TrackAddScreen(
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    // ボイスの生成状況をダイアログで表示する
+    if (uiState.dialogSowing) {
+        SynthesizeProgressDialog(
+            current = uiState.dialogProgressCurrent,
+            total = uiState.dialogProgressTotal,
+            onConfirm = {
+                viewModel.cancelAddTrack()
+            }
+        )
     }
 
     TrackAddScreenContent(
@@ -171,8 +183,6 @@ fun TrackAddScreenContent(
             onAddText = onAddText,
             playOrder = uiState.playMode,
             onPlayOrderChange = onPlayOrderChange,
-            onSave = onSave,
-            onSaveToDraft = onSaveToDraft,
             validateTrackName = uiState.validateTrackName?.asString(),
             validateTextListItems = uiState.validateTextList.map { it?.asString() },
             validateInterval = uiState.validateInterval?.asString(),

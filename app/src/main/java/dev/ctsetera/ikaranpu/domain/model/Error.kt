@@ -1,8 +1,8 @@
 package dev.ctsetera.ikaranpu.domain.model
 
-sealed interface Error {
-    data object TrackNotFound : Error
-    data object VoiceEmpty : Error
-    data object DatabaseFailure : Error
-    data object ApiServerFailure : Error
+sealed class Error {
+    data object TrackNotFound : Error()
+    data object VoiceEmpty : Error()
+    data object DatabaseFailure : Error()
+    data object ApiServerFailure : Error()
 }

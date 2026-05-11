@@ -14,17 +14,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,8 +59,6 @@ fun TrackEditor(
     onAddText: () -> Unit,
     playOrder: PlayMode,
     onPlayOrderChange: (PlayMode) -> Unit,
-    onSave: () -> Unit,
-    onSaveToDraft: () -> Unit,
     validateTrackName: String? = null,
     validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
@@ -246,6 +247,49 @@ fun TrackEditor(
     }
 }
 
+@Composable
+fun SynthesizeProgressDialog(
+    current: Int,
+    total: Int,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = {}, // ダイアログ外タップ時など
+
+        title = {
+            Text(text = "ボイスを生成中...")
+        },
+        text = {
+            Column {
+                Spacer(Modifier.height(32.dp))
+
+                LinearProgressIndicator(
+                    progress = { current.toFloat() / (total + 1).toFloat() },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(32.dp))
+
+                Text(
+                    text = "ボイス${current}を生成中..."
+                )
+
+                Spacer(Modifier.height(32.dp))
+
+                Text(
+                    text = "* この操作には少し時間がかかります。"
+                )
+            }
+        },
+
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("キャンセル")
+            }
+        },
+    )
+}
+
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
@@ -264,8 +308,18 @@ fun TrackEditorPreview() {
             onAddText = {},
             playOrder = PlayMode.NORMAL,
             onPlayOrderChange = {},
-            onSave = {},
-            onSaveToDraft = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, apiLevel = 34)
+@Composable
+fun SynthesizeProgressDialogPreview() {
+    IkaranpuTheme {
+        SynthesizeProgressDialog(
+            current = 5,
+            total = 10,
+            onConfirm = {},
         )
     }
 }

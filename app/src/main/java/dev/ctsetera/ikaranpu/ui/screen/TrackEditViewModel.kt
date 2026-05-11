@@ -9,6 +9,7 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.UiText
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.domain.model.TrackProgress
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
@@ -46,7 +47,49 @@ class TrackEditViewModel(
     val uiState: StateFlow<TrackEditUiState> = _uiState
 
     init {
+        observeProgress()
+
         getTrack()
+    }
+
+    private fun observeProgress() {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateTrackUseCase.progressFlow.collect { progress ->
+                when (progress) {
+                    is TrackProgress.Downloaded -> {
+                        if (progress.current == progress.total) {
+                            _uiState.update { state ->
+                                state.copy(
+                                    dialogSowing = false,
+                                    dialogProgressCurrent = 0,
+                                    dialogProgressTotal = 10,
+                                )
+                            }
+                        }
+                    }
+
+                    is TrackProgress.Downloading -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                dialogSowing = true,
+                                dialogProgressCurrent = progress.current,
+                                dialogProgressTotal = progress.total,
+                            )
+                        }
+                    }
+
+                    else -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                dialogSowing = false,
+                                dialogProgressCurrent = 0,
+                                dialogProgressTotal = 10,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun getTrack() = viewModelScope.launch(Dispatchers.IO) {
@@ -122,7 +165,7 @@ class TrackEditViewModel(
             validateTextList[0] =
                 UiText.StringResource(R.string.validation_track_list_item_required)
         }
-        
+
         _uiState.update { state ->
             state.copy(validateTextList = validateTextList)
         }
@@ -220,6 +263,11 @@ class TrackEditViewModel(
         _uiState.update { state ->
             state.copy(isInProgress = false)
         }
+    }
+
+    fun cancelUpdateTrack() {
+        // 実行中のトラック更新処理をキャンセル
+        // TODO()
     }
 
     private fun validateAll(): Boolean {

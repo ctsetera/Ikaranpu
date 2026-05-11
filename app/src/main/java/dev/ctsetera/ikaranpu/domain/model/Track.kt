@@ -27,8 +27,8 @@ data class Track(
     val isPinned: Boolean = false,
 ) {
     companion object {
-        const val MAX_TRACK_NAME_LENGTH = 30
-        const val MAX_TEXT_LENGTH = 50
+        const val MAX_TRACK_NAME_LENGTH = 20
+        const val MAX_TEXT_LENGTH = 20
     }
 
     init {

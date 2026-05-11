@@ -22,6 +22,11 @@ class DraftViewModel(
     val uiState: StateFlow<DraftListUiState> = _uiState
 
     fun loadTracks() = viewModelScope.launch(Dispatchers.IO) {
+        _uiState.value = DraftListUiState(
+            isLoading = true,
+            drafts = emptyList(),
+        )
+
         getDraftListUseCase()
             .onSuccess { drafts ->
                 _uiState.value = DraftListUiState(
