@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
+import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
@@ -44,22 +45,29 @@ fun TrackPlayScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    // エラーがあればトーストで表示
-    val errorMessageId = uiState.errorMessageId
-    LaunchedEffect(errorMessageId) {
-        errorMessageId?.let {
-            Toast.makeText(
-                context,
-                context.getString(it),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
     TrackPlayScreenContent(
         uiState = uiState,
         onStop = { navController.popBackStack() }
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    // エラーがあればトーストで表示
+                    Toast.makeText(
+                        context,
+                        context.getString(event.messageId),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                UiEvent.PopBack -> {
+
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

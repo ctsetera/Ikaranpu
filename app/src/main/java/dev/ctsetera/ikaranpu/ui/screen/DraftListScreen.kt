@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
+import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.DraftListUiState
@@ -42,18 +43,6 @@ fun DraftListScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-
-    // エラーがあればトーストで表示
-    val errorMessageId = uiState.errorMessageId
-    LaunchedEffect(errorMessageId) {
-        errorMessageId?.let {
-            Toast.makeText(
-                context,
-                context.getString(it),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 
     DraftListScreenContent(
         uiState = uiState,
@@ -71,6 +60,25 @@ fun DraftListScreen(
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.loadTracks()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    // エラーがあればトーストで表示
+                    Toast.makeText(
+                        context,
+                        context.getString(event.messageId),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                UiEvent.PopBack -> {
+                    
+                }
+            }
         }
     }
 }

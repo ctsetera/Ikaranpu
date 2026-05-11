@@ -13,9 +13,12 @@ import dev.ctsetera.ikaranpu.domain.model.TrackProgress
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
+import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -87,6 +90,9 @@ class TrackAddViewModel(
         )
     )
     val uiState: StateFlow<TrackAddUiState> = _uiState
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent
 
     fun changeTrackName(trackName: String) {
         // バリデーション
@@ -217,6 +223,7 @@ class TrackAddViewModel(
                 }
             }
             .onFailure {
+                _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
                 _uiState.update { state ->
                     state.copy(
                         isSavedSuccess = false,
