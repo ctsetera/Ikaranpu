@@ -28,6 +28,10 @@ class TrackListViewModel(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent: SharedFlow<UiEvent> = _uiEvent
 
+    init {
+        loadTracks()
+    }
+    
     fun loadTracks() = viewModelScope.launch(Dispatchers.IO) {
         _uiState.value = TrackListUiState(
             isLoading = true,

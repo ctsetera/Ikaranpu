@@ -40,9 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.UiEvent
@@ -73,13 +70,6 @@ fun TrackListScreen(
         }
     )
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.loadTracks()
-        }
-    }
-
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -97,6 +87,24 @@ fun TrackListScreen(
                 }
             }
         }
+    }
+
+    val currentBackStackEntry = navController.currentBackStackEntry
+    LaunchedEffect(currentBackStackEntry) {
+        // 前に開いていた画面で「データの再取得をしてください」と言われたら
+        currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow("refresh", false)
+            ?.collect { shouldRefresh ->
+
+                if (shouldRefresh) {
+                    // データ再取得
+                    viewModel.loadTracks()
+
+                    // 一回処理したら戻す
+                    currentBackStackEntry.savedStateHandle["refresh"] = false
+                }
+            }
     }
 }
 

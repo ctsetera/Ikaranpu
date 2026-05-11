@@ -78,9 +78,6 @@ fun TrackEditScreen(
         onSaveToDraft = {
             if (!uiState.isInProgress) viewModel.updateTrack(false)
         },
-        onSavedSuccess = {
-            navController.popBackStack()
-        }
     )
 
     LaunchedEffect(Unit) {
@@ -96,7 +93,11 @@ fun TrackEditScreen(
                 }
 
                 UiEvent.PopBack -> {
-
+                    // 前画面へ値を返す
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("refresh", true)
+                    navController.popBackStack()
                 }
             }
         }
@@ -117,14 +118,7 @@ fun TrackEditScreenContent(
     onPlayOrderChange: (PlayMode) -> Unit,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
-    onSavedSuccess: () -> Unit,
 ) {
-    LaunchedEffect(uiState.isSavedSuccess) {
-        if (uiState.isSavedSuccess) {
-            onSavedSuccess()
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -216,7 +210,6 @@ fun TrackEditScreenPreview() {
             onPlayOrderChange = {},
             onSave = {},
             onSaveToDraft = {},
-            onSavedSuccess = {},
         )
     }
 }

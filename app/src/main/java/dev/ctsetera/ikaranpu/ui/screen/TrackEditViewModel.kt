@@ -254,15 +254,12 @@ class TrackEditViewModel(
             state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
         )
             .onSuccess {
-                _uiState.update { state ->
-                    state.copy(isSavedSuccess = true)
-                }
+                _uiEvent.emit(UiEvent.PopBack)
             }
             .onFailure {
                 _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
                 _uiState.update { state ->
                     state.copy(
-                        isSavedSuccess = false,
                         errorMessageId = it.getMessageId(),
                     )
                 }

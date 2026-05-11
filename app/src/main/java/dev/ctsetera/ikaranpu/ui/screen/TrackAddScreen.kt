@@ -78,9 +78,6 @@ fun TrackAddScreen(
         onSaveToDraft = {
             viewModel.addTrack(false)
         },
-        onSavedSuccess = {
-            navController.popBackStack()
-        }
     )
 
     LaunchedEffect(Unit) {
@@ -96,7 +93,11 @@ fun TrackAddScreen(
                 }
 
                 UiEvent.PopBack -> {
-
+                    // 前画面へ値を返す
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("refresh", true)
+                    navController.popBackStack()
                 }
             }
         }
@@ -117,14 +118,7 @@ fun TrackAddScreenContent(
     onPlayOrderChange: (PlayMode) -> Unit,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
-    onSavedSuccess: () -> Unit,
 ) {
-    LaunchedEffect(uiState.isSavedSuccess) {
-        if (uiState.isSavedSuccess) {
-            onSavedSuccess()
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -215,7 +209,6 @@ fun TrackAddScreenPreview() {
             onPlayOrderChange = {},
             onSave = {},
             onSaveToDraft = {},
-            onSavedSuccess = {},
         )
     }
 }
