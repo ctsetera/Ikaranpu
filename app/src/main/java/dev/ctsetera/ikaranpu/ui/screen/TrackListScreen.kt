@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.TrackList
+import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -152,7 +153,7 @@ fun TrackListScreenContent(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { onNavigateAdd(Screen.TrackAdd.route) }) {
+                        IconButton(onClick = rememberSingleClick { onNavigateAdd(Screen.TrackAdd.route) }) {
                             Icon(Icons.Default.Add, contentDescription = "追加")
                         }
                     }
@@ -224,7 +225,7 @@ fun DrawerContent(
                 },
                 label = { Text(screen.title) },
                 selected = currentRoute == screen.route,
-                onClick = { onDestinationClicked(screen) },
+                onClick = rememberSingleClick { onDestinationClicked(screen) },
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = NavigationDrawerItemDefaults.colors(

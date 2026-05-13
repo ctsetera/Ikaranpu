@@ -34,6 +34,7 @@ import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.SynthesizeProgressDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
+import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.state.TrackEditUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
@@ -73,10 +74,10 @@ fun TrackEditScreen(
         onAddText = { viewModel.addTextListItem() },
         onPlayOrderChange = { viewModel.changePlayMode(it) },
         onSave = {
-            if (!uiState.isInProgress) viewModel.updateTrack(true)
+            if (!uiState.isSaving) viewModel.updateTrack(true)
         },
         onSaveToDraft = {
-            if (!uiState.isInProgress) viewModel.updateTrack(false)
+            if (!uiState.isSaving) viewModel.updateTrack(false)
         },
     )
 
@@ -128,7 +129,7 @@ fun TrackEditScreenContent(
                 ),
                 title = { Text("トラック編集") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = rememberSingleClick { onBack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "戻る"
@@ -148,8 +149,8 @@ fun TrackEditScreenContent(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     OutlinedButton(
-                        onClick = onSaveToDraft,
-                        enabled = !uiState.isInProgress,
+                        onClick = rememberSingleClick { onSaveToDraft() },
+                        enabled = !uiState.isSaving,
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp)
@@ -160,8 +161,8 @@ fun TrackEditScreenContent(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Button(
-                        onClick = onSave,
-                        enabled = !uiState.isInProgress,
+                        onClick = rememberSingleClick { onSave() },
+                        enabled = !uiState.isSaving,
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp)
@@ -174,7 +175,7 @@ fun TrackEditScreenContent(
     ) { padding ->
         TrackEditor(
             modifier = Modifier.padding(padding),
-            enabled = !uiState.isInProgress,
+            enabled = !uiState.isSaving,
             title = uiState.trackName,
             onTitleChange = onTitleChange,
             selectedCharacter = uiState.characterType,

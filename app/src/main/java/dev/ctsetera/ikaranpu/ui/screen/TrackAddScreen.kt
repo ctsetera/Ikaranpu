@@ -34,6 +34,7 @@ import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.SynthesizeProgressDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
+import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
@@ -128,7 +129,7 @@ fun TrackAddScreenContent(
                 ),
                 title = { Text("トラック追加") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = rememberSingleClick { onBack() }) {
                         Icon(Icons.Default.Close, contentDescription = "戻る")
                     }
                 }
@@ -145,8 +146,8 @@ fun TrackAddScreenContent(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     OutlinedButton(
-                        onClick = onSaveToDraft,
-                        enabled = !uiState.isInProgress,
+                        onClick = rememberSingleClick { onSaveToDraft() },
+                        enabled = !uiState.isSaving,
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp)
@@ -157,8 +158,8 @@ fun TrackAddScreenContent(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Button(
-                        onClick = onSave,
-                        enabled = !uiState.isInProgress,
+                        onClick = rememberSingleClick { onSave() },
+                        enabled = !uiState.isSaving,
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp)
@@ -172,7 +173,7 @@ fun TrackAddScreenContent(
 
         TrackEditor(
             modifier = Modifier.padding(padding),
-            enabled = !uiState.isInProgress,
+            enabled = !uiState.isSaving,
             title = uiState.trackName,
             onTitleChange = onTitleChange,
             selectedCharacter = uiState.characterType,

@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.ui.UiEvent
+import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 
@@ -149,7 +150,7 @@ fun TrackPlayScreenContent(
             }
 
             Button(
-                onClick = onStop,
+                onClick = rememberSingleClick { onStop() },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()

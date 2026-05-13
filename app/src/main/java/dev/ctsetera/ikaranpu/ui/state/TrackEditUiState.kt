@@ -5,7 +5,7 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 
 data class TrackEditUiState(
-    val isInProgress: Boolean = false,
+    val isSaving: Boolean = false,
     val trackName: String = "",
     val characterType: CharacterType = CharacterType.ZUNDAMON,
     val textList: List<String> = listOf(""),

@@ -197,13 +197,13 @@ class TrackAddViewModel(
         isActive: Boolean,
     ) = viewModelScope.launch(Dispatchers.IO) {
         _uiState.update { state ->
-            state.copy(isInProgress = true)
+            state.copy(isSaving = true)
         }
 
         if (isActive) {
             if (!validateAll()) {
                 _uiState.update { state ->
-                    state.copy(isInProgress = false)
+                    state.copy(isSaving = false)
                 }
                 return@launch
             }
@@ -225,13 +225,10 @@ class TrackAddViewModel(
                 _uiState.update { state ->
                     state.copy(
                         errorMessageId = it.getMessageId(),
+                        isSaving = false,
                     )
                 }
             }
-
-        _uiState.update { state ->
-            state.copy(isInProgress = false)
-        }
     }
 
     fun cancelAddTrack() {

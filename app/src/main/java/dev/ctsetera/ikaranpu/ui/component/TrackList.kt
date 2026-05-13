@@ -46,7 +46,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.dropUnlessStarted
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
@@ -186,14 +185,14 @@ fun TrackItem(
                     ) {
                         DropdownMenuItem(
                             text = { Text("編集") },
-                            onClick = dropUnlessStarted {
+                            onClick = rememberSingleClick {
                                 onEdit.invoke(track.trackId)
                                 expanded.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("削除") },
-                            onClick = dropUnlessStarted {
+                            onClick = rememberSingleClick {
                                 showDeleteDialog = true
                                 expanded.value = false
                             }
@@ -205,7 +204,7 @@ fun TrackItem(
 
                 if (track.state == TrackState.PLAYABLE) {
                     Button(
-                        onClick = dropUnlessStarted {
+                        onClick = rememberSingleClick {
                             onPlay.invoke(track.trackId)
                         },
                     ) {
@@ -254,7 +253,7 @@ fun DeleteTrackConfirmDialog(
         },
 
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = rememberSingleClick { onConfirm() }) {
                 Text("はい")
             }
         },

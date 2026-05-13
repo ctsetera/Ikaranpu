@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.TrackList
+import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.DraftListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -115,7 +116,7 @@ fun DraftListScreenContent(
                 ),
                 title = { Text("下書き") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = rememberSingleClick { onBack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "戻る"

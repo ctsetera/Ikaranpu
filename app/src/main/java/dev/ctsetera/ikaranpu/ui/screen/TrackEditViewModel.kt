@@ -99,10 +99,6 @@ class TrackEditViewModel(
     }
 
     private fun getTrack() = viewModelScope.launch(Dispatchers.IO) {
-        _uiState.update { state ->
-            state.copy(isInProgress = true)
-        }
-
         getTrackByTrackIdUseCase(trackId)
             .onSuccess { track ->
                 _uiState.update { state ->
@@ -123,10 +119,6 @@ class TrackEditViewModel(
                     )
                 }
             }
-
-        _uiState.update { state ->
-            state.copy(isInProgress = false)
-        }
     }
 
     fun changeTrackName(trackName: String) {
@@ -232,13 +224,13 @@ class TrackEditViewModel(
         isActive: Boolean,
     ) = viewModelScope.launch(Dispatchers.IO) {
         _uiState.update { state ->
-            state.copy(isInProgress = true)
+            state.copy(isSaving = true)
         }
 
         if (isActive) {
             if (!validateAll()) {
                 _uiState.update { state ->
-                    state.copy(isInProgress = false)
+                    state.copy(isSaving = false)
                 }
                 return@launch
             }
@@ -260,14 +252,11 @@ class TrackEditViewModel(
                 _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
                 _uiState.update { state ->
                     state.copy(
+                        isSaving = false,
                         errorMessageId = it.getMessageId(),
                     )
                 }
             }
-
-        _uiState.update { state ->
-            state.copy(isInProgress = false)
-        }
     }
 
     fun cancelUpdateTrack() {
