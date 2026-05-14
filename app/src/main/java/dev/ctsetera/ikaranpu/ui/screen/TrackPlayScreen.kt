@@ -33,10 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
-import dev.ctsetera.ikaranpu.ui.UiEvent
-import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
+import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @Composable
 fun TrackPlayScreen(

@@ -42,12 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
-import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.TrackList
-import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
+import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 import kotlinx.coroutines.launch
 
 @Composable

@@ -52,6 +52,7 @@ import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @Composable
 fun TrackList(

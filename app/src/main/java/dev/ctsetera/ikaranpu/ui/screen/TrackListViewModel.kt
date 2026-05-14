@@ -7,7 +7,7 @@ import com.github.michaelbull.result.onSuccess
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
 import dev.ctsetera.ikaranpu.getMessageId
-import dev.ctsetera.ikaranpu.ui.UiEvent
+import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,7 +31,7 @@ class TrackListViewModel(
     init {
         loadTracks()
     }
-    
+
     fun loadTracks() = viewModelScope.launch(Dispatchers.IO) {
         _uiState.value = TrackListUiState(
             isLoading = true,

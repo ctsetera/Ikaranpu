@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu.ui.component
+package dev.ctsetera.ikaranpu.ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

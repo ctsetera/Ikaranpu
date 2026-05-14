@@ -38,9 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.ctsetera.ikaranpu.clearFocusOnKeyboardDismiss
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.util.rememberKeyboardHider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +65,8 @@ fun TrackEditor(
     validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
 ) {
+    val hideKeyboard = rememberKeyboardHider()
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -76,7 +80,9 @@ fun TrackEditor(
             label = { Text("タイトル") },
             isError = validateTrackName != null,
             enabled = enabled,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clearFocusOnKeyboardDismiss(),
             supportingText = {
                 Text(
                     text = validateTrackName ?: "",
@@ -139,7 +145,9 @@ fun TrackEditor(
             isError = validateInterval != null,
             enabled = enabled,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clearFocusOnKeyboardDismiss(),
             supportingText = {
                 Text(
                     text = validateInterval ?: "",
@@ -153,7 +161,11 @@ fun TrackEditor(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("読み上げテキスト（最大10件）", modifier = Modifier.weight(1f))
             OutlinedButton(
-                onClick = onAddText,
+                onClick = {
+                    hideKeyboard()
+
+                    onAddText()
+                },
                 enabled = enabled && textItems.size < 10,
             ) {
                 Icon(
@@ -172,7 +184,11 @@ fun TrackEditor(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
-                    onClick = { onDeleteText(i) },
+                    onClick = {
+                        hideKeyboard()
+
+                        onDeleteText(i)
+                    },
                     enabled = enabled
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "削除")
@@ -184,7 +200,9 @@ fun TrackEditor(
                     onValueChange = { if (enabled) onTextChange(i, it) },
                     enabled = enabled,
                     isError = validationMessage != null,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clearFocusOnKeyboardDismiss(),
                     placeholder = { Text("テキスト${i + 1}を入力") },
                     supportingText = {
                         Text(

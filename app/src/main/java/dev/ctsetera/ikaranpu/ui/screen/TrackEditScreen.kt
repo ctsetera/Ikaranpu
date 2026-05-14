@@ -1,17 +1,18 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,12 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
-import dev.ctsetera.ikaranpu.ui.UiEvent
 import dev.ctsetera.ikaranpu.ui.component.SynthesizeProgressDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
-import dev.ctsetera.ikaranpu.ui.component.rememberSingleClick
+import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackEditUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @Composable
 fun TrackEditScreen(
@@ -139,12 +140,11 @@ fun TrackEditScreenContent(
             )
         },
         bottomBar = {
-            Column {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-
+            BottomAppBar(
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding()
+            ) {
                 Row(
                     modifier = Modifier.padding(16.dp)
                 ) {
