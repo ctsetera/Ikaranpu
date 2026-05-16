@@ -1,22 +1,14 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,19 +17,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
-import dev.ctsetera.ikaranpu.ui.component.SynthesizeProgressDialog
+import dev.ctsetera.ikaranpu.ui.component.ExitTrackEditorConfirmDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
+import dev.ctsetera.ikaranpu.ui.component.TrackEditorSaveButtons
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
-import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @Composable
 fun TrackAddScreen(
@@ -46,17 +40,6 @@ fun TrackAddScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-
-    // ボイスの生成状況をダイアログで表示する
-    if (uiState.dialogSowing) {
-        SynthesizeProgressDialog(
-            current = uiState.dialogProgressCurrent,
-            total = uiState.dialogProgressTotal,
-            onConfirm = {
-                viewModel.cancelAddTrack()
-            }
-        )
-    }
 
     TrackAddScreenContent(
         uiState = uiState,
@@ -80,6 +63,7 @@ fun TrackAddScreen(
         onSaveToDraft = {
             viewModel.addTrack(false)
         },
+        onCancelDialog = { viewModel.cancelAddTrack() },
     )
 
     LaunchedEffect(Unit) {
@@ -94,7 +78,7 @@ fun TrackAddScreen(
                     ).show()
                 }
 
-                UiEvent.PopBack -> {
+                UiEvent.Success -> {
                     // 前画面へ値を返す
                     navController.previousBackStackEntry
                         ?.savedStateHandle
@@ -120,8 +104,12 @@ fun TrackAddScreenContent(
     onPlayOrderChange: (PlayMode) -> Unit,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
+    onCancelDialog: () -> Unit,
 ) {
+    var showExitConfirmDialog by remember { mutableStateOf(false) }
+
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -130,44 +118,20 @@ fun TrackAddScreenContent(
                 ),
                 title = { Text("トラック追加") },
                 navigationIcon = {
-                    IconButton(onClick = rememberSingleClick { onBack() }) {
+                    IconButton(onClick = {
+                        showExitConfirmDialog = true
+                    }) {
                         Icon(Icons.Default.Close, contentDescription = "戻る")
                     }
                 }
             )
         },
         bottomBar = {
-            BottomAppBar(
-                modifier = Modifier
-                    .imePadding()
-                    .navigationBarsPadding()
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = rememberSingleClick { onSaveToDraft() },
-                        enabled = !uiState.isSaving,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp)
-                    ) {
-                        Text("下書きに保存")
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button(
-                        onClick = rememberSingleClick { onSave() },
-                        enabled = !uiState.isSaving,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp)
-                    ) {
-                        Text("保存")
-                    }
-                }
-            }
+            TrackEditorSaveButtons(
+                enabled = !uiState.isSaving,
+                onSave = onSave,
+                onSaveToDraft = onSaveToDraft,
+            )
         }
     ) { padding ->
 
@@ -189,6 +153,28 @@ fun TrackAddScreenContent(
             validateTrackName = uiState.validateTrackName?.asString(),
             validateTextListItems = uiState.validateTextList.map { it?.asString() },
             validateInterval = uiState.validateInterval?.asString(),
+            dialogSowing = uiState.dialogSowing,
+            dialogProgressCurrent = uiState.dialogProgressCurrent,
+            dialogProgressTotal = uiState.dialogProgressTotal,
+            onCancelDialog = onCancelDialog
+        )
+    }
+
+    // 戻るボタン押下をハンドリング
+    BackHandler {
+        showExitConfirmDialog = true
+    }
+
+    if (showExitConfirmDialog) {
+        ExitTrackEditorConfirmDialog(
+            isNewTrack = true,
+            onConfirm = {
+                onBack()
+                showExitConfirmDialog = false
+            },
+            onDismiss = {
+                showExitConfirmDialog = false
+            },
         )
     }
 }
@@ -210,6 +196,7 @@ fun TrackAddScreenPreview() {
             onPlayOrderChange = {},
             onSave = {},
             onSaveToDraft = {},
+            onCancelDialog = {},
         )
     }
 }

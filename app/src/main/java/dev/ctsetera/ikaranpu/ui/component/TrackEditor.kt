@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,10 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -43,6 +47,7 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberKeyboardHider
+import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +69,10 @@ fun TrackEditor(
     validateTrackName: String? = null,
     validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
+    dialogSowing: Boolean,
+    dialogProgressCurrent: Int,
+    dialogProgressTotal: Int,
+    onCancelDialog: () -> Unit,
 ) {
     val hideKeyboard = rememberKeyboardHider()
 
@@ -90,7 +99,8 @@ fun TrackEditor(
                 )
             }
         )
-        Spacer(Modifier.height(16.dp))
+
+        Spacer(Modifier.height(8.dp))
 
         // ▶ Character
         val characterMap = mapOf(
@@ -114,7 +124,7 @@ fun TrackEditor(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = characterExpanded)
                 },
                 modifier = Modifier
-                    .menuAnchor(MenuAnchorType.SecondaryEditable, enabled)
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                     .fillMaxWidth()
             )
             ExposedDropdownMenu(
@@ -135,13 +145,14 @@ fun TrackEditor(
                 }
             }
         }
-        Spacer(Modifier.height(16.dp))
+
+        Spacer(Modifier.height(8.dp + 16.dp))
 
         // ▶ Interval
         OutlinedTextField(
             value = intervalSec,
             onValueChange = { if (enabled && it.length < 4) onIntervalSecChange(it) },
-            label = { Text("リピート間隔（秒）") },
+            label = { Text("インターバル（秒）") },
             isError = validateInterval != null,
             enabled = enabled,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -155,7 +166,8 @@ fun TrackEditor(
                 )
             }
         )
-        Spacer(Modifier.height(24.dp))
+
+        Spacer(Modifier.height(8.dp))
 
         // ▶ Text items
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -177,7 +189,8 @@ fun TrackEditor(
                 Text("追加")
             }
         }
-        Spacer(Modifier.height(8.dp))
+
+        Spacer(Modifier.height(8.dp + 16.dp))
 
         textItems.forEachIndexed { i, text ->
             val validationMessage = validateTextListItems.getOrNull(i)
@@ -189,7 +202,10 @@ fun TrackEditor(
 
                         onDeleteText(i)
                     },
-                    enabled = enabled
+                    enabled = enabled,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(bottom = 16.dp)
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "削除")
                 }
@@ -212,10 +228,9 @@ fun TrackEditor(
                     }
                 )
             }
+
             Spacer(Modifier.height(8.dp))
         }
-
-        Spacer(Modifier.height(24.dp))
 
         // ▶ Play order
         val playOrderMap = mapOf(
@@ -261,15 +276,104 @@ fun TrackEditor(
             }
         }
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(8.dp + 16.dp))
+    }
+
+    // ボイスの生成状況をダイアログで表示する
+    if (dialogSowing) {
+        TrackEditorSynthesizeProgressDialog(
+            current = dialogProgressCurrent,
+            total = dialogProgressTotal,
+            onCancel = {
+                onCancelDialog()
+            }
+        )
     }
 }
 
 @Composable
-fun SynthesizeProgressDialog(
+fun TrackEditorSaveButtons(
+    enabled: Boolean = true,
+    onSave: () -> Unit,
+    onSaveToDraft: () -> Unit,
+) {
+    val hideKeyboard = rememberKeyboardHider()
+
+    Column(
+        modifier = Modifier
+            .imePadding()
+            .navigationBarsPadding()
+    ) {
+        HorizontalDivider()
+
+        Row(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            OutlinedButton(
+                onClick = rememberSingleClick {
+                    hideKeyboard()
+                    onSaveToDraft()
+                },
+                enabled = enabled,
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text("下書きに保存")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = rememberSingleClick {
+                    hideKeyboard()
+                    onSave()
+                },
+                enabled = enabled,
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text("保存")
+            }
+        }
+    }
+}
+
+@Composable
+fun ExitTrackEditorConfirmDialog(
+    isNewTrack: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, // ダイアログ外タップ時など
+
+        title = {
+            Text(text = "前の画面に戻りますか？")
+        },
+        text = {
+            Text(
+                text = if (isNewTrack) "入力した内容は保存されません。" else "変更した内容は保存されません。"
+            )
+        },
+
+        confirmButton = {
+            TextButton(onClick = rememberSingleClick { onConfirm() }) {
+                Text("保存せずに戻る")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("キャンセル")
+            }
+        }
+    )
+}
+
+@Composable
+fun TrackEditorSynthesizeProgressDialog(
     current: Int,
     total: Int,
-    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = {}, // ダイアログ外タップ時など
@@ -301,7 +405,7 @@ fun SynthesizeProgressDialog(
         },
 
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = onCancel) {
                 Text("キャンセル")
             }
         },
@@ -326,18 +430,34 @@ fun TrackEditorPreview() {
             onAddText = {},
             playOrder = PlayMode.NORMAL,
             onPlayOrderChange = {},
+            dialogSowing = false,
+            dialogProgressCurrent = 0,
+            dialogProgressTotal = 1,
+            onCancelDialog = {},
         )
     }
 }
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun SynthesizeProgressDialogPreview() {
+fun TrackEditorSynthesizeProgressDialogPreview() {
     IkaranpuTheme {
-        SynthesizeProgressDialog(
+        TrackEditorSynthesizeProgressDialog(
             current = 5,
             total = 10,
-            onConfirm = {},
+            onCancel = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, apiLevel = 34)
+@Composable
+fun TrackEditorSaveButtonsPreview() {
+    IkaranpuTheme {
+        TrackEditorSaveButtons(
+            enabled = true,
+            onSave = {},
+            onSaveToDraft = {},
         )
     }
 }

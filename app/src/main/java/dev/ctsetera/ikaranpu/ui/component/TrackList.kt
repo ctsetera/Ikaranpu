@@ -97,7 +97,7 @@ fun TrackItem(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -255,12 +255,12 @@ fun DeleteTrackConfirmDialog(
 
         confirmButton = {
             TextButton(onClick = rememberSingleClick { onConfirm() }) {
-                Text("はい")
+                Text("削除")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("いいえ")
+                Text("キャンセル")
             }
         }
     )
@@ -285,7 +285,7 @@ fun TrackItemPreview() {
                 ),
                 Track(
                     2,
-                    "イカランプイカランプイカランプイカランプイカランプイカランプ",
+                    "イカランプ",
                     CharacterType.METAN,
                     listOf("イカランプみて", "イカランプ確認", "イカランプをみるのよ"),
                     listOf(),

@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu
+package dev.ctsetera.ikaranpu.ui.util
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable

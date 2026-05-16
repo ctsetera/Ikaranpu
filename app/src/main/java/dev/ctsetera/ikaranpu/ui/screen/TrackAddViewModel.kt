@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dev.ctsetera.ikaranpu.R
-import dev.ctsetera.ikaranpu.UiText
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.TrackProgress
@@ -15,6 +14,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
+import dev.ctsetera.ikaranpu.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -200,13 +200,11 @@ class TrackAddViewModel(
             state.copy(isSaving = true)
         }
 
-        if (isActive) {
-            if (!validateAll()) {
-                _uiState.update { state ->
-                    state.copy(isSaving = false)
-                }
-                return@launch
+        if (!validateAll(isActive)) {
+            _uiState.update { state ->
+                state.copy(isSaving = false)
             }
+            return@launch
         }
 
         addTrackUseCase(
@@ -218,7 +216,8 @@ class TrackAddViewModel(
             state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
         )
             .onSuccess {
-                _uiEvent.emit(UiEvent.PopBack)
+                _uiEvent.emit(UiEvent.ShowToast(if (isActive) R.string.track_save_success else R.string.track_save_to_draft_success))
+                _uiEvent.emit(UiEvent.Success)
             }
             .onFailure {
                 _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
@@ -236,7 +235,7 @@ class TrackAddViewModel(
         // TODO()
     }
 
-    private fun validateAll(): Boolean {
+    private fun validateAll(isActive: Boolean): Boolean {
         val state = _uiState.value
 
         var hasError = false
@@ -245,7 +244,7 @@ class TrackAddViewModel(
         val trackNameError =
             when {
                 state.trackName.isBlank() ->
-                    UiText.StringResource(R.string.validation_track_name_required)
+                    if (isActive) UiText.StringResource(R.string.validation_track_name_required) else null
 
                 state.trackName.length > 20 ->
                     UiText.StringResource(R.string.validation_track_name_max_20)
@@ -255,6 +254,7 @@ class TrackAddViewModel(
 
         if (trackNameError != null) hasError = true
 
+
         // --- TextList ---
         val textErrors = state.textList.mapIndexed { index, text ->
             when {
@@ -262,7 +262,7 @@ class TrackAddViewModel(
                     UiText.StringResource(R.string.validation_track_list_item_max_20)
 
                 index == 0 && state.textList.none { it.isNotBlank() } ->
-                    UiText.StringResource(R.string.validation_track_list_item_required)
+                    if (isActive) UiText.StringResource(R.string.validation_track_list_item_required) else null
 
                 else -> null
             }
@@ -276,7 +276,7 @@ class TrackAddViewModel(
         val intervalError =
             when {
                 state.interval.isBlank() ->
-                    UiText.StringResource(R.string.validation_track_interval_required)
+                    if (isActive) UiText.StringResource(R.string.validation_track_interval_required) else null
 
                 intervalInt == null ->
                     UiText.StringResource(R.string.validation_track_interval_num)
@@ -291,6 +291,7 @@ class TrackAddViewModel(
             }
 
         if (intervalError != null) hasError = true
+
 
         // UI更新
         _uiState.update {

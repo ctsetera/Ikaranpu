@@ -42,6 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
+import dev.ctsetera.ikaranpu.domain.model.CharacterType
+import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.domain.model.Track
+import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
@@ -83,7 +87,7 @@ fun TrackListScreen(
                     ).show()
                 }
 
-                UiEvent.PopBack -> {
+                UiEvent.Success -> {
 
                 }
             }
@@ -243,7 +247,31 @@ fun TrackListScreenPreview() {
     IkaranpuTheme {
         TrackListScreenContent(
             uiState = TrackListUiState(
-                tracks = emptyList(),
+                isLoading = false,
+                tracks = listOf(
+                    Track(
+                        1,
+                        "イカランプ",
+                        CharacterType.ZUNDAMON,
+                        listOf("イカランプみて", "イカランプ確認", "イカランプをみるのだ"),
+                        listOf(),
+                        10,
+                        PlayMode.NORMAL,
+                        state = TrackState.PLAYABLE,
+                        isPinned = false,
+                    ),
+                    Track(
+                        2,
+                        "イカランプ",
+                        CharacterType.METAN,
+                        listOf("イカランプみて", "イカランプ確認", "イカランプをみるのよ"),
+                        listOf(),
+                        10,
+                        PlayMode.NORMAL,
+                        state = TrackState.PLAYABLE,
+                        isPinned = false,
+                    )
+                ),
                 errorMessageId = null
             ),
             onOpenDrawer = {},

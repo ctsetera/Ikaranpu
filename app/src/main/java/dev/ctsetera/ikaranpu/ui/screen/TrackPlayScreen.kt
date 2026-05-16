@@ -63,7 +63,7 @@ fun TrackPlayScreen(
                     ).show()
                 }
 
-                UiEvent.PopBack -> {
+                UiEvent.Success -> {
 
                 }
             }
@@ -155,7 +155,6 @@ fun TrackPlayScreenContent(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .height(56.dp)
             ) {
                 Text(text = "停止")
             }

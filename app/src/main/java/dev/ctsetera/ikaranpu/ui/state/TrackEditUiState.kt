@@ -1,8 +1,8 @@
 package dev.ctsetera.ikaranpu.ui.state
 
-import dev.ctsetera.ikaranpu.UiText
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.ui.util.UiText
 
 data class TrackEditUiState(
     val isSaving: Boolean = false,
