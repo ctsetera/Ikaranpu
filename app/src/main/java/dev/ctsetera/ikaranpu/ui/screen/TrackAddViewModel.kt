@@ -16,6 +16,7 @@ import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
 import dev.ctsetera.ikaranpu.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -193,46 +194,65 @@ class TrackAddViewModel(
         _uiState.update { it.copy(playMode = playMode) }
     }
 
+    private var addTrackJob: Job? = null
+
     fun addTrack(
         isActive: Boolean,
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        _uiState.update { state ->
-            state.copy(isSaving = true)
-        }
+    ) {
+        // Coroutineの二重実行を防止
+        if (addTrackJob?.isActive == true) return
 
-        if (!validateAll(isActive)) {
+        addTrackJob = viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { state ->
-                state.copy(isSaving = false)
+                state.copy(isSaving = true)
             }
-            return@launch
-        }
 
-        addTrackUseCase(
-            trackName = _uiState.value.trackName,
-            characterType = _uiState.value.characterType,
-            textList = _uiState.value.textList,
-            interval = _uiState.value.interval.toIntOrNull() ?: 0,
-            playMode = _uiState.value.playMode,
-            state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
-        )
-            .onSuccess {
-                _uiEvent.emit(UiEvent.ShowToast(if (isActive) R.string.track_save_success else R.string.track_save_to_draft_success))
-                _uiEvent.emit(UiEvent.Success)
-            }
-            .onFailure {
-                _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
+            if (!validateAll(isActive)) {
                 _uiState.update { state ->
-                    state.copy(
-                        errorMessageId = it.getMessageId(),
-                        isSaving = false,
-                    )
+                    state.copy(isSaving = false)
                 }
+                return@launch
             }
+
+            addTrackUseCase(
+                trackName = _uiState.value.trackName,
+                characterType = _uiState.value.characterType,
+                textList = _uiState.value.textList,
+                interval = _uiState.value.interval.toIntOrNull() ?: 0,
+                playMode = _uiState.value.playMode,
+                state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
+            )
+                .onSuccess {
+                    _uiEvent.emit(UiEvent.ShowToast(if (isActive) R.string.track_save_success else R.string.track_save_to_draft_success))
+                    _uiEvent.emit(UiEvent.Success)
+                }
+                .onFailure {
+                    _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
+                    _uiState.update { state ->
+                        state.copy(
+                            errorMessageId = it.getMessageId(),
+                            isSaving = false,
+                        )
+                    }
+                }
+            addTrackJob = null
+        }
     }
 
     fun cancelAddTrack() {
-        // 実行中のトラック追加処理をキャンセル
-        // TODO()
+        // 実行中のトラック更新処理をキャンセル
+        addTrackJob?.cancel()
+        addTrackJob = null
+
+        // ダイアログを閉じる
+        _uiState.update { state ->
+            state.copy(
+                dialogSowing = false,
+                dialogProgressCurrent = 0,
+                dialogProgressTotal = 10,
+                isSaving = false,
+            )
+        }
     }
 
     private fun validateAll(isActive: Boolean): Boolean {
