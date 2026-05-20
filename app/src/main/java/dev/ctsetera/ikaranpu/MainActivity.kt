@@ -16,21 +16,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.data.audio.AudioPlayerManager
+import dev.ctsetera.ikaranpu.data.local.cache.AppSettingsDataStore
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiClient
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiService
+import dev.ctsetera.ikaranpu.data.repository.SettingsRepository
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
 import dev.ctsetera.ikaranpu.data.repository.VoiceRepository
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetSettingsUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.PlayTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.SaveSettingUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.DraftListScreen
 import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
+import dev.ctsetera.ikaranpu.ui.screen.SettingViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
@@ -104,6 +109,24 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         SettingScreen(
+                            viewModel = viewModel {
+                                SettingViewModel(
+                                    GetSettingsUseCase(
+                                        SettingsRepository(
+                                            AppSettingsDataStore(
+                                                applicationContext
+                                            )
+                                        )
+                                    ),
+                                    SaveSettingUseCase(
+                                        SettingsRepository(
+                                            AppSettingsDataStore(
+                                                applicationContext
+                                            )
+                                        )
+                                    ),
+                                )
+                            },
                             navController = navController
                         )
                     }
@@ -285,11 +308,17 @@ class MainActivity : ComponentActivity() {
                                             )
                                         ),
                                         PlayTrackUseCase(
+                                            SettingsRepository(
+                                                AppSettingsDataStore(
+                                                    applicationContext
+                                                )
+                                            ),
                                             TrackRepository(
                                                 (applicationContext as MyApplication).database.trackDao()
                                             ),
                                             AudioPlayerManager(applicationContext),
-                                        ), trackId
+                                        ),
+                                        trackId,
                                     )
                                 },
                                 navController = navController,

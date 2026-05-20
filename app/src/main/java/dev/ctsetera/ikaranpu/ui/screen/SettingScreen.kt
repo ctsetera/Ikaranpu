@@ -1,28 +1,60 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
+@Composable
+fun SettingScreen(
+    viewModel: SettingViewModel,
+    navController: NavController,
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    SettingScreenContent(
+        volume = uiState.settings.volume,
+        onVolumeChange = {
+            viewModel.saveVolumeSettings(it)
+        },
+        onBack = {
+            navController.popBackStack()
+        },
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(navController: NavController) {
+fun SettingScreenContent(
+    volume: Int,
+    onVolumeChange: (Int) -> Unit,
+    onBack: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -34,7 +66,7 @@ fun SettingScreen(navController: NavController) {
                 navigationIcon = {
                     IconButton(
                         onClick = rememberSingleClick {
-                            navController.popBackStack()
+                            onBack()
                         },
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
@@ -43,19 +75,63 @@ fun SettingScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        Text(
-            text = "設定画面です",
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
-        )
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                    contentDescription = null,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "ボイスの音量設定",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Slider(
+                value = volume / 100f,
+                onValueChange = { onVolumeChange((it * 100).toInt()) },
+                valueRange = 0.01f..1f,
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "ボイスの音量を設定します。\nデフォルトは50%です。",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "${(volume)}%",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.align(Alignment.Top)
+                )
+            }
+        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun SettingScreenPreview() {
     IkaranpuTheme {
-        SettingScreen(navController = rememberNavController())
+        SettingScreenContent(volume = 50, onBack = {}, onVolumeChange = {})
     }
 }

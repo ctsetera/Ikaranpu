@@ -4,11 +4,14 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.andThen
 import dev.ctsetera.ikaranpu.data.audio.IAudioPlayerManager
+import dev.ctsetera.ikaranpu.data.repository.SettingsRepository
 import dev.ctsetera.ikaranpu.domain.model.Error
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.repository.ITrackRepository
+import kotlinx.coroutines.flow.first
 
 class PlayTrackUseCase(
+    private val settingsRepository: SettingsRepository,
     private val trackRepository: ITrackRepository,
     private val audioPlayerManager: IAudioPlayerManager,
 ) {
@@ -16,7 +19,11 @@ class PlayTrackUseCase(
         trackId: Long,
     ): Result<Unit, Error> {
         // アプリ側の音量設定を取得
-        // TODO()
+        val volume =
+            settingsRepository
+                .getSettings()
+                .first()
+                .volume
 
         // 音声トラックを取得して再生
         return trackRepository
@@ -30,7 +37,7 @@ class PlayTrackUseCase(
                     mp3List = track.voiceList,
                     intervalSec = track.interval,
                     random = track.playMode == PlayMode.RANDOM,
-                    volume = 50, // TODO()
+                    volume = volume,
                 )
             }
     }
