@@ -324,4 +324,10 @@ class TrackAddViewModel(
 
         return !hasError
     }
+
+    override fun onCleared() {
+        cancelAddTrack()
+
+        super.onCleared()
+    }
 }

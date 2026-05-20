@@ -352,4 +352,10 @@ class TrackEditViewModel(
 
         return !hasError
     }
+
+    override fun onCleared() {
+        cancelUpdateTrack()
+
+        super.onCleared()
+    }
 }
