@@ -1,6 +1,7 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,7 +53,10 @@ fun TrackPlayScreen(
 
     TrackPlayScreenContent(
         uiState = uiState,
-        onStop = { navController.popBackStack() }
+        onStop = {
+            viewModel.stop()
+            navController.popBackStack()
+        }
     )
 
     LaunchedEffect(Unit) {
@@ -85,6 +93,16 @@ fun TrackPlayScreenContent(
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 title = { Text("トラック再生") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        onStop()
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "戻る"
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
@@ -156,9 +174,13 @@ fun TrackPlayScreenContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = "停止")
+                Text(text = if (uiState.isPlaying) "停止 " else "戻る")
             }
         }
+    }
+
+    BackHandler {
+        onStop()
     }
 }
 

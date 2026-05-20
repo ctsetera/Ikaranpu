@@ -4,6 +4,9 @@
     <string name="error_track_not_found">トラックが見つかりません</string>
     <string name="error_connection_failed">通信に失敗しました</string>
     <string name="error_voice_empty">音声ファイルの取得に失敗しました</string>
+    <string name="error_temporary_voice_file_creation_failed">音声データの一時キャッシュの作成に失敗しました</string>
+    <string name="error_voice_play_failed">音声データの再生に失敗しました</string>
+    <string name="error_unknown">なにかがおかしいよ</string>
     <string name="validation_track_name_required">トラック名は必須です</string>
     <string name="validation_track_name_max_20">トラック名は20文字を越えてはいけません</string>
     <string name="validation_track_list_item_required">テキストは必ず1つ以上入力する必要があります</string>

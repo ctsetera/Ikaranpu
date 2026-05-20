@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dev.ctsetera.ikaranpu.data.audio.AudioPlayerManager
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiClient
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiService
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
@@ -24,6 +25,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackListUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.PlayTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.DraftListScreen
@@ -281,6 +283,12 @@ class MainActivity : ComponentActivity() {
                                             TrackRepository(
                                                 (applicationContext as MyApplication).database.trackDao()
                                             )
+                                        ),
+                                        PlayTrackUseCase(
+                                            TrackRepository(
+                                                (applicationContext as MyApplication).database.trackDao()
+                                            ),
+                                            AudioPlayerManager(applicationContext),
                                         ), trackId
                                     )
                                 },

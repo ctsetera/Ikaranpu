@@ -5,4 +5,9 @@ sealed class Error {
     data object VoiceEmpty : Error()
     data object DatabaseFailure : Error()
     data object ApiServerFailure : Error()
+    data object FileCreateFailed : Error()
+    data object PlaybackFailed : Error()
+    data class Unknown(
+        val throwable: Throwable,
+    ) : Error()
 }

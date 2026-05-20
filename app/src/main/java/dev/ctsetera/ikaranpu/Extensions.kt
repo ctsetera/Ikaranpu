@@ -21,6 +21,9 @@ fun Error.getMessageId(): Int {
         is Error.DatabaseFailure -> R.string.error_database
         is Error.ApiServerFailure -> R.string.error_connection_failed
         is Error.VoiceEmpty -> R.string.error_voice_empty
+        Error.FileCreateFailed -> R.string.error_temporary_voice_file_creation_failed
+        Error.PlaybackFailed -> R.string.error_voice_play_failed
+        is Error.Unknown -> R.string.error_unknown
     }
 }
 

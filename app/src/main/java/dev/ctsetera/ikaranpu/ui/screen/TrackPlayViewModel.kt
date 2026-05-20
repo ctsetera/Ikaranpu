@@ -2,9 +2,12 @@ package dev.ctsetera.ikaranpu.ui.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.PlayTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
@@ -18,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class TrackPlayViewModel(
     private val getTrackByTrackIdUseCase: GetTrackByTrackIdUseCase,
+    private val playTrackUseCase: PlayTrackUseCase,
     private val trackId: Long,
 ) : ViewModel() {
 
@@ -28,41 +32,82 @@ class TrackPlayViewModel(
     val uiEvent: SharedFlow<UiEvent> = _uiEvent
 
     init {
+        getTrack()
+
         playTrack()
     }
 
-    private fun playTrack() = viewModelScope.launch(Dispatchers.IO) {
-        // Load Track
+    private fun getTrack() = viewModelScope.launch(Dispatchers.IO) {
         getTrackByTrackIdUseCase(trackId)
             .onSuccess { track ->
-                _uiState.value = TrackPlayUiState(
-                    isLoading = false,
-                    track = track
-                )
-
-                // 再生
-
-                // UI更新
                 _uiState.update { state ->
-                    state.copy(isPlaying = true)
+                    state.copy(
+                        track = track,
+                    )
                 }
-            }.onFailure {
+            }
+            .onFailure {
                 _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
-                _uiState.value = TrackPlayUiState(
-                    isLoading = false,
-                    errorMessageId = it.getMessageId(),
-                )
+                _uiState.update { state ->
+                    state.copy(
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
             }
     }
 
-    override fun onCleared() {
-        stopTrack()
+    private fun playTrack() {
+        // 多重再生防止
+        if (_uiState.value.isPlaying) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            when (
+                val result = playTrackUseCase(trackId)
+            ) {
+                is Ok -> {
+                    _uiState.value = _uiState.value.copy(
+                        isPlaying = true,
+                    )
+                }
+
+                is Err -> {
+                    _uiEvent.emit(UiEvent.ShowToast(result.error.getMessageId()))
+                    _uiState.value = TrackPlayUiState(
+                        errorMessageId = result.error.getMessageId(),
+                    )
+                }
+            }
+        }
     }
 
-    private fun stopTrack() = viewModelScope.launch(Dispatchers.IO) {
-        // UI更新
-        _uiState.update { state ->
-            state.copy(isPlaying = false)
+    /**
+     * 再生停止
+     */
+    fun stop() = viewModelScope.launch(Dispatchers.IO) {
+        when (
+            val result = playTrackUseCase.stop()
+        ) {
+
+            is Ok -> {
+                _uiState.value = _uiState.value.copy(
+                    isPlaying = false,
+                )
+            }
+
+            is Err -> {
+                _uiEvent.emit(UiEvent.ShowToast(result.error.getMessageId()))
+                _uiState.value = _uiState.value.copy(
+                    errorMessageId = result.error.getMessageId(),
+                )
+            }
         }
+    }
+
+    override fun onCleared() {
+        stop()
+
+        super.onCleared()
     }
 }
