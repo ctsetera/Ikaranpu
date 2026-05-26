@@ -1,9 +1,7 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.usecase.GetSettingsUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.SaveSettingUseCase
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
@@ -13,7 +11,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -37,10 +34,6 @@ class SettingViewModel(
         )
 
         getSettingsUseCase()
-            .catch {
-                Log.e(javaClass.simpleName, "GET SETTINGS FAILED " + it.message)
-                _uiEvent.emit(UiEvent.ShowToast(R.string.error_unknown))
-            }
             .collectLatest { settings ->
                 _uiState.value =
                     _uiState.value.copy(

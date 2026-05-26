@@ -2,6 +2,7 @@ package dev.ctsetera.ikaranpu.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -15,6 +16,10 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
 
     data object Settings :
         Screen("settings", "設定", Icons.Default.Settings)
+
+    data object About :
+        Screen("about", "このアプリについて", Icons.Default.Description)
+
 
     data object TrackAdd :
         Screen("trackAdd", "トラック追加")

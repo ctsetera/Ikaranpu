@@ -32,6 +32,8 @@ import dev.ctsetera.ikaranpu.domain.usecase.PlayTrackUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.SaveSettingUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
+import dev.ctsetera.ikaranpu.ui.screen.AboutScreen
+import dev.ctsetera.ikaranpu.ui.screen.AboutViewModel
 import dev.ctsetera.ikaranpu.ui.screen.DraftListScreen
 import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
@@ -126,6 +128,40 @@ class MainActivity : ComponentActivity() {
                                         )
                                     ),
                                 )
+                            },
+                            navController = navController
+                        )
+                    }
+                    composable(
+                        Screen.About.route,
+                        enterTransition = {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(300)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(300)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.End,
+                                animationSpec = tween(300)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.End,
+                                animationSpec = tween(300)
+                            )
+                        }
+                    ) {
+                        AboutScreen(
+                            viewModel = viewModel {
+                                AboutViewModel()
                             },
                             navController = navController
                         )

@@ -218,7 +218,7 @@ fun DrawerContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val screens = listOf(Screen.Home, Screen.Draft, Screen.Settings)
+        val screens = listOf(Screen.Home, Screen.Draft, Screen.Settings, Screen.About)
         screens.forEach { screen ->
             NavigationDrawerItem(
                 icon = {

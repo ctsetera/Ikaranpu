@@ -39,6 +39,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -52,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.kotlin.result)
     implementation(libs.androidx.runtime.annotation.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.compose.markdown)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
