@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.aboutlibraries)
 }
 
 android {
@@ -42,13 +43,29 @@ android {
         buildConfig = true
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    aboutLibraries {
+        // 現在のライセンス定義情報を出力
+        export {
+            outputFile = file("../aboutLibraries/aboutLibraries.json")
+            prettyPrint = true
+        }
+    }
+}
+
+// Android plugin が task を全部生成した後
+afterEvaluate {
+    tasks.named("assembleDebug") {
+        // assembleDebugが完了したタイミングで現在のライセンス定義情報を出力するタスクを実行
+        finalizedBy("exportLibraryDefinitions")
+    }
+    tasks.named("assembleRelease") {
+        // assembleReleaseが完了したタイミングで現在のライセンス定義情報を出力するタスクを実行
+        finalizedBy("exportLibraryDefinitions")
     }
 }
 
@@ -75,6 +92,7 @@ dependencies {
     implementation(libs.androidx.runtime.annotation.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.compose.markdown)
+    implementation(libs.aboutlibraries.compose.m3)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

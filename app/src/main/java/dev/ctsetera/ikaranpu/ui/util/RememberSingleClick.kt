@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun rememberSingleClick(
-    lockTimeMillis: Long = 3000,
+    lockTimeMillis: Long = 1000,
     onClick: suspend () -> Unit,
 ): () -> Unit {
 

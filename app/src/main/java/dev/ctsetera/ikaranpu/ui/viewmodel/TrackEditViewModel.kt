@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu.ui.screen
+package dev.ctsetera.ikaranpu.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,10 +10,11 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.TrackProgress
 import dev.ctsetera.ikaranpu.domain.model.TrackState
-import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
-import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
+import dev.ctsetera.ikaranpu.ui.state.TrackEditUiState
 import dev.ctsetera.ikaranpu.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,11 +25,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TrackAddViewModel(
-    private val addTrackUseCase: AddTrackUseCase,
+class TrackEditViewModel(
+    private val trackId: Long,
+    private val getTrackByTrackIdUseCase: GetTrackByTrackIdUseCase,
+    private val updateTrackUseCase: UpdateTrackUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
     companion object {
         private const val KEY_TRACK_NAME = "track_name"
         private const val KEY_CHARACTER_TYPE = "character_type"
@@ -37,13 +39,29 @@ class TrackAddViewModel(
         private const val KEY_PLAY_MODE = "play_mode"
     }
 
+    private val _uiState = MutableStateFlow(
+        TrackEditUiState(
+            trackName = savedStateHandle[KEY_TRACK_NAME] ?: "",
+            characterType = savedStateHandle[KEY_CHARACTER_TYPE] ?: CharacterType.ZUNDAMON,
+            textList = savedStateHandle[KEY_TEXT_LIST] ?: listOf(""),
+            interval = savedStateHandle[KEY_INTERVAL] ?: "",
+            playMode = savedStateHandle[KEY_PLAY_MODE] ?: PlayMode.NORMAL,
+        )
+    )
+    val uiState: StateFlow<TrackEditUiState> = _uiState
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent
+
     init {
         observeProgress()
+
+        getTrack()
     }
 
     private fun observeProgress() {
         viewModelScope.launch(Dispatchers.IO) {
-            addTrackUseCase.progressFlow.collect { progress ->
+            updateTrackUseCase.progressFlow.collect { progress ->
                 when (progress) {
                     is TrackProgress.Downloaded -> {
                         if (progress.current == progress.total) {
@@ -81,19 +99,28 @@ class TrackAddViewModel(
         }
     }
 
-    private val _uiState = MutableStateFlow(
-        TrackAddUiState(
-            trackName = savedStateHandle[KEY_TRACK_NAME] ?: "",
-            characterType = savedStateHandle[KEY_CHARACTER_TYPE] ?: CharacterType.ZUNDAMON,
-            textList = savedStateHandle[KEY_TEXT_LIST] ?: listOf(""),
-            interval = savedStateHandle[KEY_INTERVAL] ?: "",
-            playMode = savedStateHandle[KEY_PLAY_MODE] ?: PlayMode.NORMAL,
-        )
-    )
-    val uiState: StateFlow<TrackAddUiState> = _uiState
-
-    private val _uiEvent = MutableSharedFlow<UiEvent>()
-    val uiEvent: SharedFlow<UiEvent> = _uiEvent
+    private fun getTrack() = viewModelScope.launch(Dispatchers.IO) {
+        getTrackByTrackIdUseCase(trackId)
+            .onSuccess { track ->
+                _uiState.update { state ->
+                    state.copy(
+                        trackName = track.trackName,
+                        characterType = track.characterType,
+                        textList = track.textList.ifEmpty { listOf("") },
+                        interval = track.interval.toString(),
+                        playMode = track.playMode,
+                    )
+                }
+            }
+            .onFailure {
+                _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
+                _uiState.update { state ->
+                    state.copy(
+                        errorMessageId = it.getMessageId(),
+                    )
+                }
+            }
+    }
 
     fun changeTrackName(trackName: String) {
         // バリデーション
@@ -194,15 +221,15 @@ class TrackAddViewModel(
         _uiState.update { it.copy(playMode = playMode) }
     }
 
-    private var addTrackJob: Job? = null
+    private var updateTrackJob: Job? = null
 
-    fun addTrack(
+    fun updateTrack(
         isActive: Boolean,
     ) {
         // Coroutineの二重実行を防止
-        if (addTrackJob?.isActive == true) return
+        if (updateTrackJob?.isActive == true) return
 
-        addTrackJob = viewModelScope.launch(Dispatchers.IO) {
+        updateTrackJob = viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { state ->
                 state.copy(isSaving = true)
             }
@@ -214,7 +241,8 @@ class TrackAddViewModel(
                 return@launch
             }
 
-            addTrackUseCase(
+            updateTrackUseCase(
+                trackId = trackId,
                 trackName = _uiState.value.trackName,
                 characterType = _uiState.value.characterType,
                 textList = _uiState.value.textList,
@@ -230,19 +258,19 @@ class TrackAddViewModel(
                     _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
                     _uiState.update { state ->
                         state.copy(
-                            errorMessageId = it.getMessageId(),
                             isSaving = false,
+                            errorMessageId = it.getMessageId(),
                         )
                     }
                 }
-            addTrackJob = null
+            updateTrackJob = null
         }
     }
 
-    fun cancelAddTrack() {
+    fun cancelUpdateTrack() {
         // 実行中のトラック更新処理をキャンセル
-        addTrackJob?.cancel()
-        addTrackJob = null
+        updateTrackJob?.cancel()
+        updateTrackJob = null
 
         // ダイアログを閉じる
         _uiState.update { state ->
@@ -326,7 +354,7 @@ class TrackAddViewModel(
     }
 
     override fun onCleared() {
-        cancelAddTrack()
+        cancelUpdateTrack()
 
         super.onCleared()
     }

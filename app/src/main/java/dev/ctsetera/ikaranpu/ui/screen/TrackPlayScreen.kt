@@ -42,6 +42,7 @@ import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
+import dev.ctsetera.ikaranpu.ui.viewmodel.TrackPlayViewModel
 
 @Composable
 fun TrackPlayScreen(

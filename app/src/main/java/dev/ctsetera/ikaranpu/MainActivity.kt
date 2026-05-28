@@ -33,20 +33,19 @@ import dev.ctsetera.ikaranpu.domain.usecase.SaveSettingUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.UpdateTrackUseCase
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.screen.AboutScreen
-import dev.ctsetera.ikaranpu.ui.screen.AboutViewModel
 import dev.ctsetera.ikaranpu.ui.screen.DraftListScreen
-import dev.ctsetera.ikaranpu.ui.screen.DraftViewModel
 import dev.ctsetera.ikaranpu.ui.screen.SettingScreen
-import dev.ctsetera.ikaranpu.ui.screen.SettingViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackAddScreen
-import dev.ctsetera.ikaranpu.ui.screen.TrackAddViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackEditScreen
-import dev.ctsetera.ikaranpu.ui.screen.TrackEditViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackListScreen
-import dev.ctsetera.ikaranpu.ui.screen.TrackListViewModel
 import dev.ctsetera.ikaranpu.ui.screen.TrackPlayScreen
-import dev.ctsetera.ikaranpu.ui.screen.TrackPlayViewModel
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
+import dev.ctsetera.ikaranpu.ui.viewmodel.DraftViewModel
+import dev.ctsetera.ikaranpu.ui.viewmodel.SettingViewModel
+import dev.ctsetera.ikaranpu.ui.viewmodel.TrackAddViewModel
+import dev.ctsetera.ikaranpu.ui.viewmodel.TrackEditViewModel
+import dev.ctsetera.ikaranpu.ui.viewmodel.TrackListViewModel
+import dev.ctsetera.ikaranpu.ui.viewmodel.TrackPlayViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,9 +159,6 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         AboutScreen(
-                            viewModel = viewModel {
-                                AboutViewModel()
-                            },
                             navController = navController
                         )
                     }

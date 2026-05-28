@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ikaranpu</string>
+    <string name="app_name">イカランプタイマー</string>
     <string name="error_database">データベースエラーが発生しました</string>
     <string name="error_track_not_found">トラックが見つかりません</string>
     <string name="error_connection_failed">通信に失敗しました</string>

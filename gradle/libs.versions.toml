@@ -19,6 +19,7 @@ kotlin-result = "1.1.18"
 runtimeAnnotationAndroid = "1.10.6"
 datastore = "1.1.1"
 composeMarkdown = "0.7.2"
+aboutLibraries = "12.2.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,9 +51,11 @@ kotlin-result = { group = "com.michael-bull.kotlin-result", name = "kotlin-resul
 androidx-runtime-annotation-android = { group = "androidx.compose.runtime", name = "runtime-annotation-android", version.ref = "runtimeAnnotationAndroid" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

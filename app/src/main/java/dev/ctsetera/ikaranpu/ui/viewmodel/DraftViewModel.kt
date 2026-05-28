@@ -1,4 +1,4 @@
-package dev.ctsetera.ikaranpu.ui.screen
+package dev.ctsetera.ikaranpu.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

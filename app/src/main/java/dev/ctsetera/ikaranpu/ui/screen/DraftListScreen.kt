@@ -37,6 +37,7 @@ import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.DraftListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
+import dev.ctsetera.ikaranpu.ui.viewmodel.DraftViewModel
 
 @Composable
 fun DraftListScreen(
