@@ -46,7 +46,7 @@ class VoiceRepositoryTest {
     }
 
     @Test
-    fun 生成ステータスが準備完了にならなければApiServerFailureを返す() = runBlocking {
+    fun 生成ステータスが準備完了にならなければVoiceSynthesisTimeoutを返す() = runBlocking {
         val repository = createRepository(
             api = FakeVoiceApiService(
                 statusResponse = VoiceSynthesizeStatusResponse(
@@ -57,6 +57,25 @@ class VoiceRepositoryTest {
             pollingTimeoutMillis = 30L,
             firstPollingDelayMillis = 1L,
             pollingIntervalMillis = 1L,
+        )
+
+        val result = repository.generateAndDownload(
+            text = "こんにちは",
+            characterType = CharacterType.ZUNDAMON,
+        )
+
+        assertEquals(Err(Error.VoiceSynthesisTimeout), result)
+    }
+
+    @Test
+    fun 生成ステータスの取得に失敗したらApiServerFailureを返す() = runBlocking {
+        val repository = createRepository(
+            api = FakeVoiceApiService(
+                statusResponse = VoiceSynthesizeStatusResponse(
+                    success = false,
+                    isAudioReady = false,
+                ),
+            ),
         )
 
         val result = repository.generateAndDownload(

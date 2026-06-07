@@ -2,8 +2,9 @@
     <string name="app_name">イカランプタイマー</string>
     <string name="error_database">データベースエラーが発生しました</string>
     <string name="error_track_not_found">トラックが見つかりません</string>
-    <string name="error_connection_failed">通信に失敗しました</string>
+    <string name="error_connection_failed">サーバとの通信に失敗しました</string>
     <string name="error_voice_empty">音声ファイルの取得に失敗しました</string>
+    <string name="error_voice_synthesis_timeout">ボイスの生成が時間内に完了しませんでした</string>
     <string name="error_temporary_voice_file_creation_failed">音声データの一時キャッシュの作成に失敗しました</string>
     <string name="error_voice_play_failed">音声データの再生に失敗しました</string>
     <string name="error_unknown">なにかがおかしいよ</string>

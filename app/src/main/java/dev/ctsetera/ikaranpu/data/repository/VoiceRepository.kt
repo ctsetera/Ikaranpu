@@ -32,7 +32,7 @@ class VoiceRepository(
     ): Result<ByteArray, Error> {
         return try {
             val response = synthesizeMutex.withLock {
-                // 最後のsynthesize呼び出しから5秒は待つ
+                // 最後のsynthesize呼び出しから「minSynthesizeIntervalMillis」秒は必ず待つ
                 val currentTimeMillis = System.currentTimeMillis()
                 val elapsedMillis = currentTimeMillis - lastSynthesizeTimeMillis
                 if (elapsedMillis < minSynthesizeIntervalMillis) {
@@ -93,12 +93,12 @@ class VoiceRepository(
                 }
             }
             true
-        } ?: false
+        }
 
-        return if (isReady) {
-            Ok(Unit)
-        } else {
-            Err(Error.ApiServerFailure)
+        return when (isReady) {
+            true -> Ok(Unit)
+            false -> Err(Error.ApiServerFailure)
+            null -> Err(Error.VoiceSynthesisTimeout)
         }
     }
 }
