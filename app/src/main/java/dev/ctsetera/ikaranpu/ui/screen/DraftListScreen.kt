@@ -5,17 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,12 +22,13 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
+import dev.ctsetera.ikaranpu.ui.component.AppBackButton
+import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.DraftListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
-import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.viewmodel.DraftViewModel
 
 @Composable
@@ -103,7 +95,6 @@ fun DraftListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DraftListScreenContent(
     uiState: DraftListUiState,
@@ -112,23 +103,10 @@ fun DraftListScreenContent(
     onDelete: (Long) -> Unit,
     onPlay: (Long) -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                ),
-                title = { Text("下書き") },
-                navigationIcon = {
-                    IconButton(onClick = rememberSingleClick { onBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "戻る"
-                        )
-                    }
-                }
-            )
+    AppScaffold(
+        title = "下書き",
+        navigationIcon = {
+            AppBackButton(onClick = onBack)
         }
     ) { innerPadding ->
         Column(

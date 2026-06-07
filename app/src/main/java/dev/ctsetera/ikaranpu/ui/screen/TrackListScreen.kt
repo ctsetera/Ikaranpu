@@ -10,16 +10,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +32,7 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
+import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.component.NavigationDrawer
 import dev.ctsetera.ikaranpu.ui.component.TrackList
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
@@ -106,7 +102,6 @@ fun TrackListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackListScreenContent(
     uiState: TrackListUiState,
@@ -134,27 +129,23 @@ fun TrackListScreenContent(
             }
         }
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    title = { Text("トラックリスト") },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } }
-                        ) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = rememberSingleClick { onNavigateAdd(Screen.TrackAdd.route) }) {
-                            Icon(Icons.Default.Add, contentDescription = "追加")
-                        }
+        AppScaffold(
+            title = "トラックリスト",
+            navigationIcon = {
+                IconButton(
+                    onClick = { scope.launch { drawerState.open() } }
+                ) {
+                    Icon(Icons.Default.Menu, contentDescription = "Menu")
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = rememberSingleClick {
+                        onNavigateAdd(Screen.TrackAdd.route)
                     }
-                )
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "追加")
+                }
             }
         ) { innerPadding ->
 
