@@ -6,6 +6,7 @@ import dev.ctsetera.ikaranpu.ui.validation.TrackValidationResult
 
 data class TrackEditorUiState(
     val isSaving: Boolean = false,
+    val isSaveCompleted: Boolean = false,
     val trackName: String = "",
     val characterType: CharacterType = CharacterType.ZUNDAMON,
     val textList: List<String> = listOf(""),

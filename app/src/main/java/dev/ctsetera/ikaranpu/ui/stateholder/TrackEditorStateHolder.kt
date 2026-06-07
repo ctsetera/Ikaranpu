@@ -106,7 +106,21 @@ class TrackEditorStateHolder(
     }
 
     fun setSaving(isSaving: Boolean) {
-        _uiState.update { it.copy(isSaving = isSaving) }
+        _uiState.update {
+            it.copy(
+                isSaving = isSaving,
+                isSaveCompleted = if (isSaving) false else it.isSaveCompleted,
+            )
+        }
+    }
+
+    fun markSaveCompleted() {
+        _uiState.update {
+            it.copy(
+                isSaveCompleted = true,
+                synthesisProgress = null,
+            )
+        }
     }
 
     fun updateProgress(progress: TrackProgress) {
@@ -126,6 +140,7 @@ class TrackEditorStateHolder(
         _uiState.update {
             it.copy(
                 isSaving = false,
+                isSaveCompleted = false,
                 synthesisProgress = null,
             )
         }

@@ -130,10 +130,25 @@ class TrackEditorStateHolderTest {
         val holder = TrackEditorStateHolder(SavedStateHandle())
         holder.setSaving(true)
         holder.updateProgress(TrackProgress.Downloading(current = 1, total = 2))
+        holder.markSaveCompleted()
 
         holder.cancelSaving()
 
         assertFalse(holder.uiState.value.isSaving)
+        assertFalse(holder.uiState.value.isSaveCompleted)
+        assertNull(holder.uiState.value.synthesisProgress)
+    }
+
+    @Test
+    fun 保存完了を記録すると保存中状態を維持して進捗を解除する() {
+        val holder = TrackEditorStateHolder(SavedStateHandle())
+        holder.setSaving(true)
+        holder.updateProgress(TrackProgress.Downloading(current = 1, total = 2))
+
+        holder.markSaveCompleted()
+
+        assertTrue(holder.uiState.value.isSaving)
+        assertTrue(holder.uiState.value.isSaveCompleted)
         assertNull(holder.uiState.value.synthesisProgress)
     }
 

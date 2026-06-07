@@ -164,6 +164,7 @@ fun TrackEditorScreenContent(
             validateTextListItems = uiState.validation.textListErrors.map { it?.asString() },
             validateInterval = uiState.validation.intervalError?.asString(),
             synthesisProgress = uiState.synthesisProgress,
+            cancelSavingOnStop = !uiState.isSaveCompleted,
             onCancelDialog = onCancelSaving,
         )
     }
@@ -207,6 +208,7 @@ fun TrackEditor(
     validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
     synthesisProgress: SynthesisProgressUiState?,
+    cancelSavingOnStop: Boolean = true,
     onCancelDialog: () -> Unit,
 ) {
     val hideKeyboard = rememberKeyboardHider()
@@ -427,11 +429,13 @@ fun TrackEditor(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(lifecycleOwner, cancelSavingOnStop) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_STOP -> {
-                    onCancelDialog()
+                    if (cancelSavingOnStop) {
+                        onCancelDialog()
+                    }
                 }
 
                 else -> Unit

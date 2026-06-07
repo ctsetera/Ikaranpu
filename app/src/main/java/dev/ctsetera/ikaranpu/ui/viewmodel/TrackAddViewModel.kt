@@ -77,6 +77,7 @@ class TrackAddViewModel(
                     state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
                 )
                     .onSuccess {
+                        editor.markSaveCompleted()
                         _uiEvent.emit(
                             UiEvent.ShowToast(
                                 if (isActive) {
@@ -99,6 +100,8 @@ class TrackAddViewModel(
     }
 
     fun cancelAddTrack() {
+        if (uiState.value.isSaveCompleted) return
+
         addTrackJob?.cancel()
         addTrackJob = null
         editor.cancelSaving()
