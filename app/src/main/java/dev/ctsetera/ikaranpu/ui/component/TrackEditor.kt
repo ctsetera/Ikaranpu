@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.ctsetera.ikaranpu.clearFocusOnKeyboardDismiss
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.ui.state.SynthesisProgressUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberKeyboardHider
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
@@ -73,9 +74,7 @@ fun TrackEditor(
     validateTrackName: String? = null,
     validateTextListItems: List<String?> = emptyList(),
     validateInterval: String? = null,
-    dialogSowing: Boolean,
-    dialogProgressCurrent: Int,
-    dialogProgressTotal: Int,
+    synthesisProgress: SynthesisProgressUiState?,
     onCancelDialog: () -> Unit,
 ) {
     val hideKeyboard = rememberKeyboardHider()
@@ -283,10 +282,10 @@ fun TrackEditor(
     }
 
     // ボイスの生成状況をダイアログで表示する
-    if (dialogSowing) {
+    synthesisProgress?.let { progress ->
         TrackEditorSynthesizeProgressDialog(
-            current = dialogProgressCurrent,
-            total = dialogProgressTotal,
+            current = progress.current,
+            total = progress.total,
             onCancel = {
                 onCancelDialog()
             }
@@ -450,9 +449,7 @@ fun TrackEditorPreview() {
             onAddText = {},
             playOrder = PlayMode.NORMAL,
             onPlayOrderChange = {},
-            dialogSowing = false,
-            dialogProgressCurrent = 0,
-            dialogProgressTotal = 1,
+            synthesisProgress = null,
             onCancelDialog = {},
         )
     }

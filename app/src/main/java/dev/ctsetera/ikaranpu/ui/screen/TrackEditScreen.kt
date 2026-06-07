@@ -30,7 +30,7 @@ import dev.ctsetera.ikaranpu.ui.component.ExitTrackEditorConfirmDialog
 import dev.ctsetera.ikaranpu.ui.component.TrackEditor
 import dev.ctsetera.ikaranpu.ui.component.TrackEditorSaveButtons
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
-import dev.ctsetera.ikaranpu.ui.state.TrackEditUiState
+import dev.ctsetera.ikaranpu.ui.state.TrackEditorUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.viewmodel.TrackEditViewModel
 
@@ -48,15 +48,9 @@ fun TrackEditScreen(
         onTitleChange = { viewModel.changeTrackName(it) },
         onCharacterChange = { viewModel.changeCharacterType(it) },
         onIntervalChange = { viewModel.changeInterval(it) },
-        onTextChange = { i, v -> viewModel.changeTextListItem(i, v) },
-        onDeleteText = { i ->
-            if (uiState.textList.size == 1) {
-                viewModel.changeTextListItem(i, "")
-            } else {
-                viewModel.removeTextListItem(i)
-            }
-        },
-        onAddText = { viewModel.addTextListItem() },
+        onTextChange = { i, v -> viewModel.changeText(i, v) },
+        onDeleteText = { viewModel.removeText(it) },
+        onAddText = { viewModel.addText() },
         onPlayOrderChange = { viewModel.changePlayMode(it) },
         onSave = {
             if (!uiState.isSaving) viewModel.updateTrack(true)
@@ -94,7 +88,7 @@ fun TrackEditScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackEditScreenContent(
-    uiState: TrackEditUiState,
+    uiState: TrackEditorUiState,
     onBack: () -> Unit,
     onTitleChange: (String) -> Unit,
     onCharacterChange: (CharacterType) -> Unit,
@@ -153,12 +147,10 @@ fun TrackEditScreenContent(
             onAddText = onAddText,
             playOrder = uiState.playMode,
             onPlayOrderChange = onPlayOrderChange,
-            validateTrackName = uiState.validateTrackName?.asString(),
-            validateTextListItems = uiState.validateTextList.map { it?.asString() },
-            validateInterval = uiState.validateInterval?.asString(),
-            dialogSowing = uiState.dialogSowing,
-            dialogProgressCurrent = uiState.dialogProgressCurrent,
-            dialogProgressTotal = uiState.dialogProgressTotal,
+            validateTrackName = uiState.validation.trackNameError?.asString(),
+            validateTextListItems = uiState.validation.textListErrors.map { it?.asString() },
+            validateInterval = uiState.validation.intervalError?.asString(),
+            synthesisProgress = uiState.synthesisProgress,
             onCancelDialog = onCancelDialog
         )
     }
@@ -187,7 +179,7 @@ fun TrackEditScreenContent(
 fun TrackEditScreenPreview() {
     IkaranpuTheme {
         TrackEditScreenContent(
-            uiState = TrackEditUiState(),
+            uiState = TrackEditorUiState(),
             onBack = {},
             onTitleChange = {},
             onCharacterChange = {},
