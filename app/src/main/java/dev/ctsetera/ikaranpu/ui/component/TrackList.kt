@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,8 +89,8 @@ fun TrackItem(
     }
 
     val characterName = when (track.characterType) {
-        CharacterType.ZUNDAMON -> "ずんだもん"
-        CharacterType.METAN -> "めたん"
+        CharacterType.ZUNDAMON -> stringResource(R.string.character_zundamon)
+        CharacterType.METAN -> stringResource(R.string.character_metan)
     }
 
     Card(
@@ -125,7 +126,7 @@ fun TrackItem(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Text(
-                            text = "Interval: ${track.interval} sec",
+                            text = stringResource(R.string.track_interval, track.interval),
                             textAlign = TextAlign.End,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -176,7 +177,7 @@ fun TrackItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options"
+                            contentDescription = stringResource(R.string.content_description_more_options)
                         )
                     }
 
@@ -185,14 +186,14 @@ fun TrackItem(
                         onDismissRequest = { expanded.value = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("編集") },
+                            text = { Text(stringResource(R.string.action_edit)) },
                             onClick = rememberSingleClick {
                                 onEdit.invoke(track.trackId)
                                 expanded.value = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("削除") },
+                            text = { Text(stringResource(R.string.action_delete)) },
                             onClick = rememberSingleClick {
                                 showDeleteDialog = true
                                 expanded.value = false
@@ -211,11 +212,11 @@ fun TrackItem(
                     ) {
                         Icon(
                             Icons.Default.PlayArrow,
-                            contentDescription = "再生",
+                            contentDescription = stringResource(R.string.action_play),
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("再生")
+                        Text(stringResource(R.string.action_play))
                     }
                 }
 
@@ -245,22 +246,22 @@ fun DeleteTrackConfirmDialog(
         onDismissRequest = onDismiss, // ダイアログ外タップ時など
 
         title = {
-            Text(text = "トラックを削除しますか？")
+            Text(text = stringResource(R.string.dialog_delete_track_title))
         },
         text = {
             Text(
-                text = "トラックの情報・ダウンロードした音声ファイルはすべて削除されます。"
+                text = stringResource(R.string.dialog_delete_track_message)
             )
         },
 
         confirmButton = {
             TextButton(onClick = rememberSingleClick { onConfirm() }) {
-                Text("削除")
+                Text(stringResource(R.string.action_delete))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("キャンセル")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

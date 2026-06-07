@@ -80,7 +80,7 @@ fun TrackPlayScreenContent(
     onStop: () -> Unit,
 ) {
     AppScaffold(
-        title = "トラック再生",
+        title = stringResource(R.string.screen_track_play),
         navigationIcon = {
             AppBackButton(onClick = onStop)
         }
@@ -105,8 +105,8 @@ fun TrackPlayScreenContent(
                         }
 
                         val characterName = when (track.characterType) {
-                            CharacterType.ZUNDAMON -> "ずんだもん"
-                            CharacterType.METAN -> "めたん"
+                            CharacterType.ZUNDAMON -> stringResource(R.string.character_zundamon)
+                            CharacterType.METAN -> stringResource(R.string.character_metan)
                         }
 
                         Column(
@@ -129,7 +129,11 @@ fun TrackPlayScreenContent(
                             Spacer(modifier = Modifier.height(64.dp))
 
                             Text(
-                                if (uiState.isPlaying) "再生中..." else "停止中",
+                                if (uiState.isPlaying) {
+                                    stringResource(R.string.track_play_playing)
+                                } else {
+                                    stringResource(R.string.track_play_stopped)
+                                },
                                 style = MaterialTheme.typography.titleLarge
                             )
 
@@ -153,7 +157,13 @@ fun TrackPlayScreenContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = if (uiState.isPlaying) "停止 " else "戻る")
+                Text(
+                    text = if (uiState.isPlaying) {
+                        stringResource(R.string.track_play_stop)
+                    } else {
+                        stringResource(R.string.track_play_back)
+                    }
+                )
             }
         }
     }

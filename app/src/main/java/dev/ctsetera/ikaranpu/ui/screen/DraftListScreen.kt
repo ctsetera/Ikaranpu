@@ -104,7 +104,7 @@ fun DraftListScreenContent(
     onPlay: (Long) -> Unit,
 ) {
     AppScaffold(
-        title = "下書き",
+        title = stringResource(R.string.screen_draft),
         navigationIcon = {
             AppBackButton(onClick = onBack)
         }

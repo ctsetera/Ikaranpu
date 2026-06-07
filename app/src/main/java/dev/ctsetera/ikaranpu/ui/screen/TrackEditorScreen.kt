@@ -2,6 +2,7 @@ package dev.ctsetera.ikaranpu.ui.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.ctsetera.ikaranpu.clearFocusOnKeyboardDismiss
+import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
@@ -66,17 +69,17 @@ import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 import kotlinx.coroutines.flow.Flow
 
 enum class TrackEditorMode(
-    val title: String,
+    @StringRes val titleRes: Int,
     val navigationIcon: ImageVector,
     val isNewTrack: Boolean,
 ) {
     ADD(
-        title = "トラック追加",
+        titleRes = R.string.screen_track_add,
         navigationIcon = Icons.Default.Close,
         isNewTrack = true,
     ),
     EDIT(
-        title = "トラック編集",
+        titleRes = R.string.screen_track_edit,
         navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
         isNewTrack = false,
     ),
@@ -125,12 +128,12 @@ fun TrackEditorScreenContent(
     var showExitConfirmDialog by remember { mutableStateOf(false) }
 
     AppScaffold(
-        title = mode.title,
+        title = stringResource(mode.titleRes),
         navigationIcon = {
             IconButton(onClick = { showExitConfirmDialog = true }) {
                 Icon(
                     imageVector = mode.navigationIcon,
-                    contentDescription = "戻る",
+                    contentDescription = stringResource(R.string.content_description_back),
                 )
             }
         },
@@ -217,7 +220,7 @@ fun TrackEditor(
         OutlinedTextField(
             value = title,
             onValueChange = { if (enabled) onTitleChange(it) },
-            label = { Text("タイトル") },
+            label = { Text(stringResource(R.string.track_editor_title_label)) },
             isError = validateTrackName != null,
             enabled = enabled,
             modifier = Modifier
@@ -235,8 +238,8 @@ fun TrackEditor(
 
         // ▶ Character
         val characterMap = mapOf(
-            CharacterType.ZUNDAMON to "ずんだもん",
-            CharacterType.METAN to "四国めたん"
+            CharacterType.ZUNDAMON to stringResource(R.string.character_zundamon),
+            CharacterType.METAN to stringResource(R.string.character_shikoku_metan),
         )
         var characterExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
@@ -249,7 +252,7 @@ fun TrackEditor(
                 value = characterMap[selectedCharacter] ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("キャラクター") },
+                label = { Text(stringResource(R.string.track_editor_character_label)) },
                 enabled = enabled,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = characterExpanded)
@@ -262,10 +265,7 @@ fun TrackEditor(
                 expanded = characterExpanded,
                 onDismissRequest = { characterExpanded = false }
             ) {
-                mapOf(
-                    Pair(CharacterType.ZUNDAMON, "ずんだもん"),
-                    Pair(CharacterType.METAN, "四国めたん")
-                ).forEach { item ->
+                characterMap.forEach { item ->
                     DropdownMenuItem(
                         text = { Text(item.value) },
                         onClick = {
@@ -283,7 +283,7 @@ fun TrackEditor(
         OutlinedTextField(
             value = intervalSec,
             onValueChange = { if (enabled && it.length < 4) onIntervalSecChange(it) },
-            label = { Text("インターバル（秒）") },
+            label = { Text(stringResource(R.string.track_editor_interval_label)) },
             isError = validateInterval != null,
             enabled = enabled,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -302,7 +302,10 @@ fun TrackEditor(
 
         // ▶ Text items
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("読み上げテキスト（最大10件）", modifier = Modifier.weight(1f))
+            Text(
+                stringResource(R.string.track_editor_text_list_label),
+                modifier = Modifier.weight(1f),
+            )
             OutlinedButton(
                 onClick = {
                     hideKeyboard()
@@ -313,11 +316,11 @@ fun TrackEditor(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "追加",
+                    contentDescription = stringResource(R.string.action_add),
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("追加")
+                Text(stringResource(R.string.action_add))
             }
         }
 
@@ -338,7 +341,10 @@ fun TrackEditor(
                         .align(Alignment.CenterVertically)
                         .padding(bottom = 16.dp)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "削除")
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.action_delete),
+                    )
                 }
                 Spacer(Modifier.width(8.dp))
 
@@ -350,7 +356,9 @@ fun TrackEditor(
                     modifier = Modifier
                         .weight(1f)
                         .clearFocusOnKeyboardDismiss(),
-                    placeholder = { Text("テキスト${i + 1}を入力") },
+                    placeholder = {
+                        Text(stringResource(R.string.track_editor_text_placeholder, i + 1))
+                    },
                     supportingText = {
                         Text(
                             text = validationMessage ?: "",
@@ -365,8 +373,8 @@ fun TrackEditor(
 
         // ▶ Play order
         val playOrderMap = mapOf(
-            PlayMode.NORMAL to "順番に再生",
-            PlayMode.RANDOM to "ランダムに再生"
+            PlayMode.NORMAL to stringResource(R.string.play_order_normal),
+            PlayMode.RANDOM to stringResource(R.string.play_order_random),
         )
         var playOrderExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
@@ -379,7 +387,7 @@ fun TrackEditor(
                 value = playOrderMap[playOrder] ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("再生順序") },
+                label = { Text(stringResource(R.string.track_editor_play_order_label)) },
                 enabled = enabled,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = playOrderExpanded)
@@ -392,10 +400,7 @@ fun TrackEditor(
                 expanded = playOrderExpanded,
                 onDismissRequest = { playOrderExpanded = false }
             ) {
-                mapOf(
-                    Pair(PlayMode.NORMAL, "順番に再生"),
-                    Pair(PlayMode.RANDOM, "ランダムに再生")
-                ).forEach { item ->
+                playOrderMap.forEach { item ->
                     DropdownMenuItem(
                         text = { Text(item.value) },
                         onClick = {
@@ -466,7 +471,7 @@ fun TrackEditorSaveButtons(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                Text("下書きに保存")
+                Text(stringResource(R.string.action_save_to_draft))
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -480,7 +485,7 @@ fun TrackEditorSaveButtons(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                Text("保存")
+                Text(stringResource(R.string.action_save))
             }
         }
     }
@@ -496,22 +501,26 @@ fun ExitTrackEditorConfirmDialog(
         onDismissRequest = onDismiss, // ダイアログ外タップ時など
 
         title = {
-            Text(text = "前の画面に戻りますか？")
+            Text(text = stringResource(R.string.dialog_exit_track_editor_title))
         },
         text = {
             Text(
-                text = if (isNewTrack) "入力した内容は保存されません。" else "変更した内容は保存されません。"
+                text = if (isNewTrack) {
+                    stringResource(R.string.dialog_exit_new_track_message)
+                } else {
+                    stringResource(R.string.dialog_exit_existing_track_message)
+                }
             )
         },
 
         confirmButton = {
             TextButton(onClick = rememberSingleClick { onConfirm() }) {
-                Text("保存せずに戻る")
+                Text(stringResource(R.string.action_back_without_saving))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("キャンセル")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )
@@ -527,7 +536,7 @@ fun TrackEditorSynthesizeProgressDialog(
         onDismissRequest = {}, // ダイアログ外タップ時など
 
         title = {
-            Text(text = "ボイスを生成中...")
+            Text(text = stringResource(R.string.dialog_synthesizing_voice_title))
         },
         text = {
             Column {
@@ -541,20 +550,20 @@ fun TrackEditorSynthesizeProgressDialog(
                 Spacer(Modifier.height(32.dp))
 
                 Text(
-                    text = "ボイス${current}を生成中..."
+                    text = stringResource(R.string.dialog_synthesizing_voice_progress, current)
                 )
 
                 Spacer(Modifier.height(32.dp))
 
                 Text(
-                    text = "* この操作には少し時間がかかります。この画面を開いたままお待ちください。"
+                    text = stringResource(R.string.dialog_synthesizing_voice_message)
                 )
             }
         },
 
         confirmButton = {
             TextButton(onClick = onCancel) {
-                Text("キャンセル")
+                Text(stringResource(R.string.action_cancel))
             }
         },
     )

@@ -6,31 +6,33 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.StringRes
+import dev.ctsetera.ikaranpu.R
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector? = null) {
+sealed class Screen(val route: String, @StringRes val titleRes: Int, val icon: ImageVector? = null) {
     data object Home :
-        Screen("home", "トラックリスト", Icons.AutoMirrored.Filled.ListAlt)
+        Screen("home", R.string.screen_track_list, Icons.AutoMirrored.Filled.ListAlt)
 
     data object Draft :
-        Screen("draft", "下書き", Icons.Default.Drafts)
+        Screen("draft", R.string.screen_draft, Icons.Default.Drafts)
 
     data object Settings :
-        Screen("settings", "設定", Icons.Default.Settings)
+        Screen("settings", R.string.screen_settings, Icons.Default.Settings)
 
     data object About :
-        Screen("about", "このアプリについて", Icons.Default.Description)
+        Screen("about", R.string.screen_about, Icons.Default.Description)
 
 
     data object TrackAdd :
-        Screen("trackAdd", "トラック追加")
+        Screen("trackAdd", R.string.screen_track_add)
 
     data object TrackEdit :
-        Screen("trackEdit/{trackId}", "トラック編集") {
+        Screen("trackEdit/{trackId}", R.string.screen_track_edit) {
         fun createRoute(trackId: Long) = "trackEdit/$trackId"
     }
 
     data object TrackPlay :
-        Screen("trackPlay/{trackId}", "トラック再生") {
+        Screen("trackPlay/{trackId}", R.string.screen_track_play) {
         fun createRoute(trackId: Long) = "trackPlay/$trackId"
     }
 }

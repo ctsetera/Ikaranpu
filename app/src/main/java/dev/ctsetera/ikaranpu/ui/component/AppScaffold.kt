@@ -14,6 +14,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +54,7 @@ fun AppBackButton(
     IconButton(onClick = rememberSingleClick { onClick() }) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "戻る",
+            contentDescription = stringResource(R.string.content_description_back),
         )
     }
 }

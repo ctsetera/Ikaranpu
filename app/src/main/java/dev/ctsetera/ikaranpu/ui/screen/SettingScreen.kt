@@ -18,9 +18,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.component.AppBackButton
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -51,7 +53,7 @@ fun SettingScreenContent(
     onBack: () -> Unit,
 ) {
     AppScaffold(
-        title = "設定",
+        title = stringResource(R.string.screen_settings),
         navigationIcon = {
             AppBackButton(onClick = onBack)
         }
@@ -74,7 +76,7 @@ fun SettingScreenContent(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "ボイスの音量設定",
+                    text = stringResource(R.string.setting_voice_volume_title),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -93,14 +95,14 @@ fun SettingScreenContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "ボイスの音量を設定します。\nデフォルトは50%です。",
+                    text = stringResource(R.string.setting_voice_volume_description),
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "${(volume)}%",
+                    text = stringResource(R.string.setting_voice_volume_value, volume),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.align(Alignment.Top)
                 )

@@ -130,12 +130,15 @@ fun TrackListScreenContent(
         }
     ) {
         AppScaffold(
-            title = "トラックリスト",
+            title = stringResource(R.string.screen_track_list),
             navigationIcon = {
                 IconButton(
                     onClick = { scope.launch { drawerState.open() } }
                 ) {
-                    Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    Icon(
+                        Icons.Default.Menu,
+                        contentDescription = stringResource(R.string.content_description_menu),
+                    )
                 }
             },
             actions = {
@@ -144,7 +147,10 @@ fun TrackListScreenContent(
                         onNavigateAdd(Screen.TrackAdd.route)
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "追加")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.action_add),
+                    )
                 }
             }
         ) { innerPadding ->

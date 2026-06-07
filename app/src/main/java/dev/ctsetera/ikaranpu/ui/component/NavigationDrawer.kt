@@ -52,16 +52,17 @@ fun NavigationDrawer(
         Spacer(modifier = Modifier.height(16.dp))
 
         topScreens.forEach { screen ->
+            val title = stringResource(screen.titleRes)
 
             NavigationDrawerItem(
                 icon = {
                     Icon(
                         imageVector = screen.icon ?: Icons.Default.QuestionMark,
-                        contentDescription = screen.title
+                        contentDescription = title
                     )
                 },
                 label = {
-                    Text(screen.title)
+                    Text(title)
                 },
                 selected = currentRoute == screen.route,
                 onClick = rememberSingleClick {
@@ -89,16 +90,17 @@ fun NavigationDrawer(
         Spacer(modifier = Modifier.height(16.dp))
 
         bottomScreens.forEach { screen ->
+            val title = stringResource(screen.titleRes)
 
             NavigationDrawerItem(
                 icon = {
                     Icon(
                         imageVector = screen.icon ?: Icons.Default.QuestionMark,
-                        contentDescription = screen.title
+                        contentDescription = title
                     )
                 },
                 label = {
-                    Text(screen.title)
+                    Text(title)
                 },
                 selected = currentRoute == screen.route,
                 onClick = rememberSingleClick {

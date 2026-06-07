@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">イカランプタイマー</string>
     <string name="error_database">データベースエラーが発生しました</string>
     <string name="error_track_not_found">トラックが見つかりません</string>
@@ -17,4 +17,49 @@
     <string name="validation_track_interval_max_1000">インターバルは1000以下の整数である必要があります</string>
     <string name="track_save_success">トラックを保存しました</string>
     <string name="track_save_to_draft_success">トラックを下書きに保存しました</string>
+    <string name="screen_track_list">トラックリスト</string>
+    <string name="screen_draft">下書き</string>
+    <string name="screen_settings">設定</string>
+    <string name="screen_about">このアプリについて</string>
+    <string name="screen_track_add">トラック追加</string>
+    <string name="screen_track_edit">トラック編集</string>
+    <string name="screen_track_play">トラック再生</string>
+    <string name="character_zundamon">ずんだもん</string>
+    <string name="character_metan">めたん</string>
+    <string name="character_shikoku_metan">四国めたん</string>
+    <string name="content_description_back">戻る</string>
+    <string name="content_description_menu">Menu</string>
+    <string name="content_description_more_options">More options</string>
+    <string name="action_add">追加</string>
+    <string name="action_edit">編集</string>
+    <string name="action_delete">削除</string>
+    <string name="action_play">再生</string>
+    <string name="action_save">保存</string>
+    <string name="action_save_to_draft">下書きに保存</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_back_without_saving">保存せずに戻る</string>
+    <string name="track_interval" tools:ignore="PluralsCandidate">Interval: %1$d sec</string>
+    <string name="dialog_delete_track_title">トラックを削除しますか？</string>
+    <string name="dialog_delete_track_message">トラックの情報・ダウンロードした音声ファイルはすべて削除されます。</string>
+    <string name="setting_voice_volume_title">ボイスの音量設定</string>
+    <string name="setting_voice_volume_description">ボイスの音量を設定します。\nデフォルトは50%です。</string>
+    <string name="setting_voice_volume_value">%1$d%%</string>
+    <string name="track_editor_title_label">タイトル</string>
+    <string name="track_editor_character_label">キャラクター</string>
+    <string name="track_editor_interval_label">インターバル（秒）</string>
+    <string name="track_editor_text_list_label">読み上げテキスト（最大10件）</string>
+    <string name="track_editor_text_placeholder">テキスト%1$dを入力</string>
+    <string name="track_editor_play_order_label">再生順序</string>
+    <string name="play_order_normal">順番に再生</string>
+    <string name="play_order_random">ランダムに再生</string>
+    <string name="dialog_exit_track_editor_title">前の画面に戻りますか？</string>
+    <string name="dialog_exit_new_track_message">入力した内容は保存されません。</string>
+    <string name="dialog_exit_existing_track_message">変更した内容は保存されません。</string>
+    <string name="dialog_synthesizing_voice_title">ボイスを生成中…</string>
+    <string name="dialog_synthesizing_voice_progress">ボイス%1$dを生成中…</string>
+    <string name="dialog_synthesizing_voice_message">* この操作には少し時間がかかります。この画面を開いたままお待ちください。</string>
+    <string name="track_play_playing">再生中…</string>
+    <string name="track_play_stopped">停止中</string>
+    <string name="track_play_stop">停止 </string>
+    <string name="track_play_back">戻る</string>
 </resources>
