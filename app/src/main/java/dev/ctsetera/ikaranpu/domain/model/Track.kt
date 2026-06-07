@@ -29,6 +29,7 @@ data class Track(
     companion object {
         const val MAX_TRACK_NAME_LENGTH = 20
         const val MAX_TEXT_LENGTH = 20
+        const val MAX_INTERVAL = 1000
     }
 
     init {
@@ -39,6 +40,9 @@ data class Track(
             require(text.length <= MAX_TEXT_LENGTH) {
                 "Each textList item must be <= $MAX_TEXT_LENGTH chars"
             }
+        }
+        require(interval <= MAX_INTERVAL) {
+            "Interval must be <= $MAX_INTERVAL"
         }
     }
 }

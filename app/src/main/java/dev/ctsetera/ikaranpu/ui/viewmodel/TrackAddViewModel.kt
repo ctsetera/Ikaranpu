@@ -14,7 +14,7 @@ import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
 import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackAddUiState
-import dev.ctsetera.ikaranpu.ui.util.UiText
+import dev.ctsetera.ikaranpu.ui.validation.TrackValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 class TrackAddViewModel(
     private val addTrackUseCase: AddTrackUseCase,
     private val savedStateHandle: SavedStateHandle,
+    private val trackValidator: TrackValidator = TrackValidator(),
 ) : ViewModel() {
 
     companion object {
@@ -96,21 +97,13 @@ class TrackAddViewModel(
     val uiEvent: SharedFlow<UiEvent> = _uiEvent
 
     fun changeTrackName(trackName: String) {
-        // バリデーション
+        savedStateHandle[KEY_TRACK_NAME] = trackName
         _uiState.update {
             it.copy(
-                validateTrackName = if (trackName.isEmpty()) {
-                    UiText.StringResource(R.string.validation_track_name_required)
-                } else if (trackName.length > 20) {
-                    UiText.StringResource(R.string.validation_track_name_max_20)
-                } else {
-                    null
-                }
+                trackName = trackName,
+                validateTrackName = trackValidator.validateTrackName(trackName),
             )
         }
-
-        savedStateHandle[KEY_TRACK_NAME] = trackName
-        _uiState.update { it.copy(trackName = trackName) }
     }
 
     fun changeCharacterType(characterType: CharacterType) {
@@ -124,27 +117,13 @@ class TrackAddViewModel(
 
         newList[index] = text
 
-        // バリデーション
-        val validateTextList = _uiState.value.validateTextList.toMutableList()
-        newList.forEachIndexed { i, v ->
-            validateTextList[i] =
-                if (v.length > 20) {
-                    UiText.StringResource(R.string.validation_track_list_item_max_20)
-                } else {
-                    null
-                }
-        }
-        if (newList.none { it.isNotEmpty() }) {
-            validateTextList[0] =
-                UiText.StringResource(R.string.validation_track_list_item_required)
-        }
-
-        _uiState.update { state ->
-            state.copy(validateTextList = validateTextList)
-        }
-
         savedStateHandle[KEY_TEXT_LIST] = newList.toList()
-        _uiState.update { it.copy(textList = newList.toList()) }
+        _uiState.update {
+            it.copy(
+                textList = newList.toList(),
+                validateTextList = trackValidator.validateTextList(newList),
+            )
+        }
     }
 
     fun removeTextListItem(index: Int) {
@@ -154,7 +133,12 @@ class TrackAddViewModel(
         newList.removeAt(index)
 
         savedStateHandle[KEY_TEXT_LIST] = newList.toList()
-        _uiState.update { it.copy(textList = newList.toList()) }
+        _uiState.update {
+            it.copy(
+                textList = newList.toList(),
+                validateTextList = trackValidator.validateTextList(newList),
+            )
+        }
     }
 
     fun addTextListItem() {
@@ -164,29 +148,22 @@ class TrackAddViewModel(
         if (newList.size < 10) newList += ""
 
         savedStateHandle[KEY_TEXT_LIST] = newList.toList()
-        _uiState.update { it.copy(textList = newList.toList()) }
+        _uiState.update {
+            it.copy(
+                textList = newList.toList(),
+                validateTextList = trackValidator.validateTextList(newList),
+            )
+        }
     }
 
     fun changeInterval(interval: String) {
-        // バリデーション
+        savedStateHandle[KEY_INTERVAL] = interval
         _uiState.update {
             it.copy(
-                validateInterval = if (interval.isEmpty()) {
-                    UiText.StringResource(R.string.validation_track_interval_required)
-                } else if (interval.toIntOrNull() == null) {
-                    UiText.StringResource(R.string.validation_track_interval_num)
-                } else if (interval.toInt() < 10) {
-                    UiText.StringResource(R.string.validation_track_interval_min_10)
-                } else if (interval.toInt() > 1000) {
-                    UiText.StringResource(R.string.validation_track_interval_max_1000)
-                } else {
-                    null
-                }
+                interval = interval,
+                validateInterval = trackValidator.validateInterval(interval),
             )
         }
-
-        savedStateHandle[KEY_INTERVAL] = interval
-        _uiState.update { it.copy(interval = interval) }
     }
 
     fun changePlayMode(playMode: PlayMode) {
@@ -257,72 +234,22 @@ class TrackAddViewModel(
 
     private fun validateAll(isActive: Boolean): Boolean {
         val state = _uiState.value
+        val result = trackValidator.validate(
+            trackName = state.trackName,
+            textList = state.textList,
+            interval = state.interval,
+            required = isActive,
+        )
 
-        var hasError = false
-
-        // --- TrackName ---
-        val trackNameError =
-            when {
-                state.trackName.isBlank() ->
-                    if (isActive) UiText.StringResource(R.string.validation_track_name_required) else null
-
-                state.trackName.length > 20 ->
-                    UiText.StringResource(R.string.validation_track_name_max_20)
-
-                else -> null
-            }
-
-        if (trackNameError != null) hasError = true
-
-
-        // --- TextList ---
-        val textErrors = state.textList.mapIndexed { index, text ->
-            when {
-                text.length > 20 ->
-                    UiText.StringResource(R.string.validation_track_list_item_max_20)
-
-                index == 0 && state.textList.none { it.isNotBlank() } ->
-                    if (isActive) UiText.StringResource(R.string.validation_track_list_item_required) else null
-
-                else -> null
-            }
-        }.toMutableList()
-
-        if (textErrors.any { it != null }) hasError = true
-
-        // --- Interval ---
-        val intervalInt = state.interval.toIntOrNull()
-
-        val intervalError =
-            when {
-                state.interval.isBlank() ->
-                    if (isActive) UiText.StringResource(R.string.validation_track_interval_required) else null
-
-                intervalInt == null ->
-                    UiText.StringResource(R.string.validation_track_interval_num)
-
-                intervalInt < 10 ->
-                    UiText.StringResource(R.string.validation_track_interval_min_10)
-
-                intervalInt > 1000 ->
-                    UiText.StringResource(R.string.validation_track_interval_max_1000)
-
-                else -> null
-            }
-
-        if (intervalError != null) hasError = true
-
-
-        // UI更新
         _uiState.update {
             it.copy(
-                validateTrackName = trackNameError,
-                validateTextList = textErrors,
-                validateInterval = intervalError,
+                validateTrackName = result.trackNameError,
+                validateTextList = result.textListErrors,
+                validateInterval = result.intervalError,
             )
         }
 
-        return !hasError
+        return result.isValid
     }
 
     override fun onCleared() {
