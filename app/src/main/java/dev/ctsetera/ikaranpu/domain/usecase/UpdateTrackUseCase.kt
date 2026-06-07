@@ -11,6 +11,7 @@ import dev.ctsetera.ikaranpu.domain.model.TrackProgress
 import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.domain.repository.ITrackRepository
 import dev.ctsetera.ikaranpu.domain.repository.IVoiceRepository
+import dev.ctsetera.ikaranpu.domain.service.TrackVoiceSynthesisService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -30,48 +31,21 @@ class UpdateTrackUseCase(
         playMode: PlayMode,
         state: TrackState,
     ): Result<Unit, Error> {
-        val voiceList: ArrayList<ByteArray> = arrayListOf()
-
-        if (state == TrackState.PLAYABLE) {
-            val filteredList = textList.filter { it.isNotEmpty() }
-
-            filteredList.forEachIndexed { index, text ->
-
-                // ダウンロード開始通知
-                _progressFlow.emit(
-                    TrackProgress.Downloading(
-                        current = index + 1,
-                        total = filteredList.size,
-                    )
+        val voiceList = if (state == TrackState.PLAYABLE) {
+            when (
+                val result = TrackVoiceSynthesisService(
+                    voiceRepository = voiceRepository,
+                    progressSink = _progressFlow::emit,
+                ).synthesize(
+                    textList = textList,
+                    characterType = characterType,
                 )
-
-                val tmpVoice = voiceRepository.generateAndDownload(
-                    text,
-                    characterType
-                )
-
-                // エラー
-                if (tmpVoice is Err<Error>) {
-
-                    _progressFlow.emit(
-                        TrackProgress.Failed(
-                            err = tmpVoice.error
-                        )
-                    )
-
-                    return tmpVoice
-                }
-
-                voiceList.add((tmpVoice as Ok).value)
-
-                // ダウンロード完了通知
-                _progressFlow.emit(
-                    TrackProgress.Downloaded(
-                        current = index + 1,
-                        total = filteredList.size,
-                    )
-                )
+            ) {
+                is Ok -> result.value
+                is Err -> return result
             }
+        } else {
+            emptyList()
         }
 
         // 「ローカルに保存」の開始を通知
@@ -85,7 +59,7 @@ class UpdateTrackUseCase(
             trackName = trackName,
             characterType = characterType,
             textList = textList,
-            voiceList = voiceList.toList(),
+            voiceList = voiceList,
             interval = interval,
             playMode = playMode,
             state = state,
