@@ -12,12 +12,14 @@ import dev.ctsetera.ikaranpu.getMessageId
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class TrackPlayViewModel(
     private val getTrackByTrackIdUseCase: GetTrackByTrackIdUseCase,
@@ -30,6 +32,8 @@ class TrackPlayViewModel(
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent: SharedFlow<UiEvent> = _uiEvent
+
+    private var playJob: Job? = null
 
     init {
         getTrack()
@@ -58,25 +62,35 @@ class TrackPlayViewModel(
 
     private fun playTrack() {
         // 多重再生防止
-        if (_uiState.value.isPlaying) {
+        if (playJob?.isActive == true) {
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            when (
-                val result = playTrackUseCase(trackId)
-            ) {
-                is Ok -> {
-                    _uiState.value = _uiState.value.copy(
-                        isPlaying = true,
-                    )
-                }
+        playJob = viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { state ->
+                state.copy(isPlaying = true)
+            }
 
-                is Err -> {
-                    _uiEvent.emit(UiEvent.ShowToast(result.error.getMessageId()))
-                    _uiState.value = TrackPlayUiState(
-                        errorMessageId = result.error.getMessageId(),
-                    )
+            try {
+                when (
+                    val result = playTrackUseCase(trackId)
+                ) {
+                    is Ok -> Unit
+
+                    is Err -> {
+                        _uiEvent.emit(UiEvent.ShowToast(result.error.getMessageId()))
+                        _uiState.value = TrackPlayUiState(
+                            errorMessageId = result.error.getMessageId(),
+                        )
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } finally {
+                playTrackUseCase.stop()
+                playJob = null
+                _uiState.update { state ->
+                    state.copy(isPlaying = false)
                 }
             }
         }
@@ -86,6 +100,7 @@ class TrackPlayViewModel(
      * 再生停止
      */
     fun stop() = viewModelScope.launch(Dispatchers.IO) {
+        playJob?.cancel()
         when (
             val result = playTrackUseCase.stop()
         ) {
@@ -106,7 +121,9 @@ class TrackPlayViewModel(
     }
 
     override fun onCleared() {
-        stop()
+        playJob?.cancel()
+        playJob = null
+        playTrackUseCase.stop()
 
         super.onCleared()
     }
