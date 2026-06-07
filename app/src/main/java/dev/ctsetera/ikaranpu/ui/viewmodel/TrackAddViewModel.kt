@@ -59,39 +59,42 @@ class TrackAddViewModel(
         if (addTrackJob?.isActive == true) return
 
         addTrackJob = viewModelScope.launch(Dispatchers.IO) {
-            editor.setSaving(true)
+            try {
+                editor.setSaving(true)
 
-            if (!editor.validate(required = isActive)) {
-                editor.setSaving(false)
-                return@launch
-            }
-
-            val state = uiState.value
-            addTrackUseCase(
-                trackName = state.trackName,
-                characterType = state.characterType,
-                textList = state.textList,
-                interval = state.interval.toIntOrNull() ?: 0,
-                playMode = state.playMode,
-                state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
-            )
-                .onSuccess {
-                    _uiEvent.emit(
-                        UiEvent.ShowToast(
-                            if (isActive) {
-                                R.string.track_save_success
-                            } else {
-                                R.string.track_save_to_draft_success
-                            }
-                        )
-                    )
-                    _uiEvent.emit(UiEvent.Success)
-                }
-                .onFailure {
-                    _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
+                if (!editor.validate(required = isActive)) {
                     editor.setSaving(false)
+                    return@launch
                 }
-            addTrackJob = null
+
+                val state = uiState.value
+                addTrackUseCase(
+                    trackName = state.trackName,
+                    characterType = state.characterType,
+                    textList = state.textList,
+                    interval = state.interval.toIntOrNull() ?: 0,
+                    playMode = state.playMode,
+                    state = if (isActive) TrackState.PLAYABLE else TrackState.DRAFT,
+                )
+                    .onSuccess {
+                        _uiEvent.emit(
+                            UiEvent.ShowToast(
+                                if (isActive) {
+                                    R.string.track_save_success
+                                } else {
+                                    R.string.track_save_to_draft_success
+                                }
+                            )
+                        )
+                        _uiEvent.emit(UiEvent.Success)
+                    }
+                    .onFailure {
+                        _uiEvent.emit(UiEvent.ShowToast(it.getMessageId()))
+                        editor.setSaving(false)
+                    }
+            } finally {
+                addTrackJob = null
+            }
         }
     }
 

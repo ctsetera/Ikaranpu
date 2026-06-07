@@ -9,9 +9,20 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.Error
 import dev.ctsetera.ikaranpu.domain.repository.IVoiceRepository
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.coroutines.cancellation.CancellationException
 
-class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
+class VoiceRepository(
+    private val api: VoiceApiService,
+    private val minSynthesizeIntervalMillis: Long = 5000L,
+    private val pollingTimeoutMillis: Long = 60000L,
+    private val firstPollingDelayMillis: Long = 100L,
+    private val pollingIntervalMillis: Long = 900L,
+) : IVoiceRepository {
     companion object {
+        private val synthesizeMutex = Mutex()
         private var lastSynthesizeTimeMillis = 0L
     }
 
@@ -19,39 +30,28 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
         text: String,
         characterType: CharacterType,
     ): Result<ByteArray, Error> {
-        return runCatching {
-            // 最後のsynthesize呼び出しから5秒は待つ
-            val currentTimeMillis = System.currentTimeMillis()
-            if (currentTimeMillis - lastSynthesizeTimeMillis < 5000L) {
-                delay(5000 - (currentTimeMillis - lastSynthesizeTimeMillis))
-            }
+        return try {
+            val response = synthesizeMutex.withLock {
+                // 最後のsynthesize呼び出しから5秒は待つ
+                val currentTimeMillis = System.currentTimeMillis()
+                val elapsedMillis = currentTimeMillis - lastSynthesizeTimeMillis
+                if (elapsedMillis < minSynthesizeIntervalMillis) {
+                    delay(minSynthesizeIntervalMillis - elapsedMillis)
+                }
 
-            // ボイス生成をリクエスト
-            val response = api.synthesize(
-                text = text,
-                speaker = characterType.toApiId(),
-            )
+                // ボイス生成をリクエスト
+                api.synthesize(
+                    text = text,
+                    speaker = characterType.toApiId(),
+                ).also {
+                    // synthesize完了時間を記録
+                    lastSynthesizeTimeMillis = System.currentTimeMillis()
+                }
+            }
             if (!response.success) return Err(Error.ApiServerFailure)
 
-            // synthesize完了時間を記録
-            lastSynthesizeTimeMillis = System.currentTimeMillis()
-
-            while (true) {
-                // サーバ側でボイスが生成されるのを待つ
-                delay(100)
-
-                // ボイスが生成されたかチェック
-                val statusResponse = api.getAudioStatus(
-                    url = response.audioStatusUrl,
-                )
-                if (!statusResponse.success) return Err(Error.ApiServerFailure)
-
-                // 生成されていればチェックを終了
-                if (statusResponse.isAudioReady) break
-
-                // サーバ側でボイスが生成されるのを待つ
-                delay(900)
-            }
+            waitUntilAudioReady(response.audioStatusUrl)
+                .let { if (it is Err) return it }
 
             // ボイスをダウンロード
             val audioResponse = api.downloadAudio(response.mp3DownloadUrl)
@@ -59,18 +59,46 @@ class VoiceRepository(private val api: VoiceApiService) : IVoiceRepository {
                 audioResponse.body()?.bytes()
             } else {
                 return Err(Error.ApiServerFailure)
-            }
-        }.fold(
-            onSuccess = {
-                if (it == null) {
-                    Err(Error.VoiceEmpty)
-                } else {
-                    Ok(it)
+            }?.let {
+                Ok(it)
+            } ?: Err(Error.VoiceEmpty)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Err(Error.ApiServerFailure)
+        }
+    }
+
+    private suspend fun waitUntilAudioReady(
+        audioStatusUrl: String,
+    ): Result<Unit, Error> {
+        val isReady = withTimeoutOrNull(pollingTimeoutMillis) {
+            var audioReady = false
+            while (!audioReady) {
+                // サーバ側でボイスが生成されるのを待つ
+                delay(firstPollingDelayMillis)
+
+                // ボイスが生成されたかチェック
+                val statusResponse = api.getAudioStatus(
+                    url = audioStatusUrl,
+                )
+                if (!statusResponse.success) return@withTimeoutOrNull false
+
+                // 生成されていればチェックを終了
+                audioReady = statusResponse.isAudioReady
+
+                if (!audioReady) {
+                    // サーバ側でボイスが生成されるのを待つ
+                    delay(pollingIntervalMillis)
                 }
-            },
-            onFailure = {
-                Err(Error.ApiServerFailure)
             }
-        )
+            true
+        } ?: false
+
+        return if (isReady) {
+            Ok(Unit)
+        } else {
+            Err(Error.ApiServerFailure)
+        }
     }
 }
