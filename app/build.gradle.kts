@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.aboutlibraries)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -58,6 +59,10 @@ android {
 }
 
 // Android plugin が task を全部生成した後
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 afterEvaluate {
     tasks.named("assembleDebug") {
         // assembleDebugが完了したタイミングで現在のライセンス定義情報を出力するタスクを実行

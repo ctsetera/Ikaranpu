@@ -8,6 +8,7 @@ import dev.ctsetera.ikaranpu.data.local.db.entity.TrackEntity
 @Database(
     entities = [TrackEntity::class],
     version = 1,
+    exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trackDao(): TrackDao

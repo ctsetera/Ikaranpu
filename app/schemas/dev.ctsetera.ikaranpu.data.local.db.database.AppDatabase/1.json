@@ -1,0 +1,218 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "3b411fe073ccaf4a57bdaa22eae4c90a",
+    "entities": [
+      {
+        "tableName": "tracks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`track_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `trackName` TEXT NOT NULL, `characterId` INTEGER NOT NULL, `text1` TEXT NOT NULL, `text2` TEXT NOT NULL, `text3` TEXT NOT NULL, `text4` TEXT NOT NULL, `text5` TEXT NOT NULL, `text6` TEXT NOT NULL, `text7` TEXT NOT NULL, `text8` TEXT NOT NULL, `text9` TEXT NOT NULL, `text10` TEXT NOT NULL, `voice1` BLOB NOT NULL, `voice2` BLOB NOT NULL, `voice3` BLOB NOT NULL, `voice4` BLOB NOT NULL, `voice5` BLOB NOT NULL, `voice6` BLOB NOT NULL, `voice7` BLOB NOT NULL, `voice8` BLOB NOT NULL, `voice9` BLOB NOT NULL, `voice10` BLOB NOT NULL, `interval` INTEGER NOT NULL, `playMode` INTEGER NOT NULL, `isPinned` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "trackId",
+            "columnName": "track_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackName",
+            "columnName": "trackName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "characterId",
+            "columnName": "characterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text1",
+            "columnName": "text1",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text2",
+            "columnName": "text2",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text3",
+            "columnName": "text3",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text4",
+            "columnName": "text4",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text5",
+            "columnName": "text5",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text6",
+            "columnName": "text6",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text7",
+            "columnName": "text7",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text8",
+            "columnName": "text8",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text9",
+            "columnName": "text9",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text10",
+            "columnName": "text10",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice1",
+            "columnName": "voice1",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice2",
+            "columnName": "voice2",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice3",
+            "columnName": "voice3",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice4",
+            "columnName": "voice4",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice5",
+            "columnName": "voice5",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice6",
+            "columnName": "voice6",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice7",
+            "columnName": "voice7",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice8",
+            "columnName": "voice8",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice9",
+            "columnName": "voice9",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voice10",
+            "columnName": "voice10",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interval",
+            "columnName": "interval",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playMode",
+            "columnName": "playMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPinned",
+            "columnName": "isPinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "track_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_tracks_isActive_updatedAt",
+            "unique": false,
+            "columnNames": [
+              "isActive",
+              "updatedAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tracks_isActive_updatedAt` ON `${TABLE_NAME}` (`isActive`, `updatedAt`)"
+          },
+          {
+            "name": "index_tracks_isActive_isPinned_updatedAt",
+            "unique": false,
+            "columnNames": [
+              "isActive",
+              "isPinned",
+              "updatedAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tracks_isActive_isPinned_updatedAt` ON `${TABLE_NAME}` (`isActive`, `isPinned`, `updatedAt`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3b411fe073ccaf4a57bdaa22eae4c90a')"
+    ]
+  }
+}
