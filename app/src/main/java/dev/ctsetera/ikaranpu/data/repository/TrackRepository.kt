@@ -19,12 +19,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
             trackDao.getTracksOderByIsPinnedAscAndUpdatedAtDesc()
         }.fold(
             onSuccess = { tracks ->
-                if (tracks.isNotEmpty()) {
-                    Ok(tracks.map { convertEntityToModel(it) })
-                } else {
-                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
-                    Err(Error.TrackNotFound)
-                }
+                Ok(tracks.map { convertEntityToModel(it) })
             },
             onFailure = {
                 Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
@@ -38,12 +33,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
             trackDao.getDraftTracksOderByUpdatedAtDesc()
         }.fold(
             onSuccess = { drafts ->
-                if (drafts.isNotEmpty()) {
-                    Ok(drafts.map { convertEntityToModel(it) })
-                } else {
-                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
-                    Err(Error.TrackNotFound)
-                }
+                Ok(drafts.map { convertEntityToModel(it) })
             },
             onFailure = {
                 Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
@@ -58,7 +48,6 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
         }.fold(
             onSuccess = { track ->
                 if (track == null) {
-                    Log.w(this::class.java.simpleName, "TRACK NOT FOUND")
                     Err(Error.TrackNotFound)
                 } else {
                     Ok(convertEntityToModel(track))

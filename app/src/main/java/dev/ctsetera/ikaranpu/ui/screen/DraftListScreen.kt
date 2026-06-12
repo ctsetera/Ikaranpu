@@ -126,13 +126,20 @@ fun DraftListScreenContent(
                 }
 
                 uiState.errorMessageId != null -> {
-                    if (uiState.errorMessageId == R.string.error_track_not_found) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = stringResource(R.string.error_track_not_found))
-                        }
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = stringResource(uiState.errorMessageId))
+                    }
+                }
+
+                uiState.drafts.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = stringResource(R.string.empty_track_list))
                     }
                 }
 

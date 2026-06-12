@@ -170,12 +170,22 @@ fun TrackListScreenContent(
                         }
                     }
 
-                    uiState.errorMessageId == R.string.error_track_not_found -> {
+                    uiState.errorMessageId != null -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = stringResource(R.string.error_track_not_found))
+                            Text(text = stringResource(uiState.errorMessageId))
+                        }
+                    }
+
+
+                    uiState.tracks.isEmpty() -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = stringResource(R.string.empty_track_list))
                         }
                     }
 
