@@ -1,6 +1,5 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -16,13 +15,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +29,7 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.ui.component.AppBackButton
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
-import dev.ctsetera.ikaranpu.ui.event.UiEvent
+import dev.ctsetera.ikaranpu.ui.event.UiEventEffect
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -44,7 +41,6 @@ fun TrackPlayScreen(
     viewModel: TrackPlayViewModel,
     navController: NavController,
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     TrackPlayScreenContent(
@@ -55,24 +51,7 @@ fun TrackPlayScreen(
         }
     )
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast -> {
-                    // エラーがあればトーストで表示
-                    Toast.makeText(
-                        context,
-                        context.getString(event.messageId),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                UiEvent.Success -> {
-
-                }
-            }
-        }
-    }
+    UiEventEffect(uiEvent = viewModel.uiEvent)
 }
 
 @Composable

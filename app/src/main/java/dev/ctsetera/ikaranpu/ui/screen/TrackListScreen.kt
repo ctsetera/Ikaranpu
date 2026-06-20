@@ -1,6 +1,5 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -35,7 +33,7 @@ import dev.ctsetera.ikaranpu.domain.model.TrackState
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.component.NavigationDrawer
 import dev.ctsetera.ikaranpu.ui.component.TrackList
-import dev.ctsetera.ikaranpu.ui.event.UiEvent
+import dev.ctsetera.ikaranpu.ui.event.UiEventEffect
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.state.TrackListUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
@@ -48,7 +46,6 @@ fun TrackListScreen(
     viewModel: TrackListViewModel,
     navController: NavController,
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     TrackListScreenContent(
@@ -64,24 +61,7 @@ fun TrackListScreen(
         }
     )
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast -> {
-                    // エラーがあればトーストで表示
-                    Toast.makeText(
-                        context,
-                        context.getString(event.messageId),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                UiEvent.Success -> {
-
-                }
-            }
-        }
-    }
+    UiEventEffect(uiEvent = viewModel.uiEvent)
 
     val currentBackStackEntry = navController.currentBackStackEntry
     LaunchedEffect(currentBackStackEntry) {

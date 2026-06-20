@@ -1,6 +1,5 @@
 package dev.ctsetera.ikaranpu.ui.screen
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,14 +58,12 @@ import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
-import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.SynthesisProgressUiState
 import dev.ctsetera.ikaranpu.ui.state.TrackEditorUiState
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberKeyboardHider
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
-import kotlinx.coroutines.flow.Flow
 
 enum class TrackEditorMode(
     @StringRes val titleRes: Int,
@@ -85,30 +80,6 @@ enum class TrackEditorMode(
         navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
         isNewTrack = false,
     ),
-}
-
-@Composable
-fun TrackEditorEventEffect(
-    uiEvent: Flow<UiEvent>,
-    onSuccess: () -> Unit,
-) {
-    val context = LocalContext.current
-
-    LaunchedEffect(uiEvent) {
-        uiEvent.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast -> {
-                    Toast.makeText(
-                        context,
-                        context.getString(event.messageId),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-
-                UiEvent.Success -> onSuccess()
-            }
-        }
-    }
 }
 
 @Composable

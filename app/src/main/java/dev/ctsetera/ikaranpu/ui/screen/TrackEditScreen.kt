@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import dev.ctsetera.ikaranpu.ui.event.UiEventEffect
 import dev.ctsetera.ikaranpu.ui.viewmodel.TrackEditViewModel
 
 @Composable
@@ -29,7 +30,7 @@ fun TrackEditScreen(
         onCancelSaving = viewModel::cancelUpdateTrack,
     )
 
-    TrackEditorEventEffect(
+    UiEventEffect(
         uiEvent = viewModel.uiEvent,
         onSuccess = {
             navController.previousBackStackEntry
