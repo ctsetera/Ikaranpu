@@ -32,7 +32,7 @@ class VoiceRepository(
     ): Result<ByteArray, Error> {
         return try {
             val response = synthesizeMutex.withLock {
-                // 最後のsynthesize呼び出しから「minSynthesizeIntervalMillis」秒は必ず待つ
+                // 最後のsynthesize呼び出しからminSynthesizeIntervalMillisミリ秒は必ず待つ
                 val currentTimeMillis = System.currentTimeMillis()
                 val elapsedMillis = currentTimeMillis - lastSynthesizeTimeMillis
                 if (elapsedMillis < minSynthesizeIntervalMillis) {
