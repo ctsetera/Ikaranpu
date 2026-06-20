@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "388076209100",
+    "project_id": "ikaranpu",
+    "storage_bucket": "ikaranpu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388076209100:android:48be7587759c3f6354d369",
+        "android_client_info": {
+          "package_name": "dev.ctsetera.ikaranpu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW6c7M1MicUFAmhF8j4sZArs0pOvphJiU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

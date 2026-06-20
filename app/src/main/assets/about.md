@@ -54,6 +54,8 @@ https://www.apache.org/licenses/LICENSE-2.0
 - Navigation Compose
 - Room
 - DataStore
+- Firebase Analytics
+- Firebase Crashlytics
 - Retrofit
 - OkHttp
 - kotlin-result

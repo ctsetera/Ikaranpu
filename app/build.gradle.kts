@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.room)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -99,6 +101,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.compose.markdown)
     implementation(libs.aboutlibraries.compose.m3)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
