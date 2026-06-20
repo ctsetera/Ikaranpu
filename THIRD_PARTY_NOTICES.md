@@ -11,7 +11,7 @@ The generated license metadata is also available at:
 
 `aboutLibraries/aboutLibraries.json`
 
-## Other Third-party Resources
+# Other Third-party Resources
 
 This application also uses or references third-party services and resources
 such as VOICEVOX-related APIs, character assets, and the app icon source.
