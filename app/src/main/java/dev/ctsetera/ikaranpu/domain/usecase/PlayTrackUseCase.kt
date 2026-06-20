@@ -4,14 +4,14 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.andThen
 import dev.ctsetera.ikaranpu.data.audio.IAudioPlayerManager
-import dev.ctsetera.ikaranpu.data.repository.SettingsRepository
 import dev.ctsetera.ikaranpu.domain.model.Error
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
+import dev.ctsetera.ikaranpu.domain.repository.ISettingsRepository
 import dev.ctsetera.ikaranpu.domain.repository.ITrackRepository
 import kotlinx.coroutines.flow.first
 
 class PlayTrackUseCase(
-    private val settingsRepository: SettingsRepository,
+    private val settingsRepository: ISettingsRepository,
     private val trackRepository: ITrackRepository,
     private val audioPlayerManager: IAudioPlayerManager,
 ) {
