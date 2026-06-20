@@ -52,6 +52,7 @@ import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.domain.model.Track
 import dev.ctsetera.ikaranpu.domain.model.TrackState
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
@@ -62,7 +63,7 @@ fun TrackList(
     onDelete: (Long) -> Unit,
     onPlay: (Long) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
+    LazyColumn(modifier = Modifier.padding(vertical = IkaranpuDimens.SpacingSmall)) {
         items(trackList, key = { it.trackId }) { track ->
             TrackItem(
                 track = track,
@@ -75,7 +76,7 @@ fun TrackList(
 }
 
 @Composable
-fun TrackItem(
+private fun TrackItem(
     track: Track,
     onEdit: (Long) -> Unit,
     onDelete: (Long) -> Unit,
@@ -94,14 +95,17 @@ fun TrackItem(
     }
 
     Card(
-        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+        modifier = Modifier.padding(
+            vertical = IkaranpuDimens.SpacingSmall,
+            horizontal = IkaranpuDimens.ScreenPadding,
+        ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         elevation = CardDefaults.cardElevation()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(IkaranpuDimens.ScreenPadding)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -114,7 +118,7 @@ fun TrackItem(
                         .clip(CircleShape)
                 )
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(IkaranpuDimens.SpacingMedium))
 
                 Column {
                     Row {
@@ -140,11 +144,11 @@ fun TrackItem(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingSmall))
 
             // --- textList を Chip で表示 ---
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(IkaranpuDimens.SpacingSmall),
                 modifier = Modifier.horizontalScroll(rememberScrollState())
             ) {
                 track.textList.forEach { text ->
@@ -162,7 +166,7 @@ fun TrackItem(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingSmall))
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Box {
@@ -215,7 +219,7 @@ fun TrackItem(
                             contentDescription = stringResource(R.string.action_play),
                             modifier = Modifier.size(18.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(IkaranpuDimens.SpacingSmall))
                         Text(stringResource(R.string.action_play))
                     }
                 }
@@ -238,7 +242,7 @@ fun TrackItem(
 }
 
 @Composable
-fun DeleteTrackConfirmDialog(
+private fun DeleteTrackConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -269,7 +273,7 @@ fun DeleteTrackConfirmDialog(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackItemPreview() {
+private fun TrackItemPreview() {
     IkaranpuTheme {
         TrackList(
             trackList = listOf(

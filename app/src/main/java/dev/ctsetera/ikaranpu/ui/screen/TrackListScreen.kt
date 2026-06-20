@@ -103,7 +103,7 @@ fun TrackListScreen(
 }
 
 @Composable
-fun TrackListScreenContent(
+private fun TrackListScreenContent(
     uiState: TrackListUiState,
     onOpenDrawer: () -> Unit,
     onNavigateAdd: (String) -> Unit,
@@ -205,7 +205,7 @@ fun TrackListScreenContent(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackListScreenPreview() {
+private fun TrackListScreenPreview() {
     IkaranpuTheme {
         TrackListScreenContent(
             uiState = TrackListUiState(

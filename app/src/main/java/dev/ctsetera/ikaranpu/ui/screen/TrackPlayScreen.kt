@@ -34,6 +34,7 @@ import dev.ctsetera.ikaranpu.ui.component.AppBackButton
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.TrackPlayUiState
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 import dev.ctsetera.ikaranpu.ui.viewmodel.TrackPlayViewModel
@@ -75,7 +76,7 @@ fun TrackPlayScreen(
 }
 
 @Composable
-fun TrackPlayScreenContent(
+private fun TrackPlayScreenContent(
     uiState: TrackPlayUiState,
     onStop: () -> Unit,
 ) {
@@ -121,12 +122,12 @@ fun TrackPlayScreenContent(
                                     .clip(CircleShape)
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
 
                             Text(characterName, style = MaterialTheme.typography.titleMedium)
                             Text(track.trackName, style = MaterialTheme.typography.titleLarge)
 
-                            Spacer(modifier = Modifier.height(64.dp))
+                            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingExtraLarge))
 
                             Text(
                                 if (uiState.isPlaying) {
@@ -137,7 +138,7 @@ fun TrackPlayScreenContent(
                                 style = MaterialTheme.typography.titleLarge
                             )
 
-                            Spacer(modifier = Modifier.height(64.dp))
+                            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingExtraLarge))
                         }
                     }
 
@@ -155,7 +156,7 @@ fun TrackPlayScreenContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(IkaranpuDimens.ScreenPadding)
             ) {
                 Text(
                     text = if (uiState.isPlaying) {
@@ -175,7 +176,7 @@ fun TrackPlayScreenContent(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackPlayScreenPreview() {
+private fun TrackPlayScreenPreview() {
     IkaranpuTheme {
         TrackPlayScreenContent(
             uiState = TrackPlayUiState(

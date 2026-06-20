@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
@@ -28,6 +27,7 @@ import dev.ctsetera.ikaranpu.BuildConfig
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.component.AppBackButton
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
@@ -91,7 +91,7 @@ fun AboutScreen(
 }
 
 @Composable
-fun AboutScreenContent(
+private fun AboutScreenContent(
     markdown: String,
     onBack: () -> Unit,
     onMarkdownLinkClicked: (String) -> Unit,
@@ -110,7 +110,7 @@ fun AboutScreenContent(
         ) {
             MarkdownText(
                 modifier = Modifier
-                    .padding(16.dp),
+                    .padding(IkaranpuDimens.ScreenPadding),
                 markdown = markdown.trimIndent(),
                 linkColor = MaterialTheme.colorScheme.primary,
                 onLinkClicked = onMarkdownLinkClicked,
@@ -121,7 +121,7 @@ fun AboutScreenContent(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun AboutScreenPreview() {
+private fun AboutScreenPreview() {
     IkaranpuTheme {
         AboutScreenContent(markdown = """
             ## Styled markdown

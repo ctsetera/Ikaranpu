@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
 
 @Composable
@@ -43,13 +44,13 @@ fun NavigationDrawer(
     ) {
         Text(
             stringResource(R.string.app_name),
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(IkaranpuDimens.ScreenPadding),
             style = MaterialTheme.typography.titleLarge
         )
 
         HorizontalDivider()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
 
         topScreens.forEach { screen ->
             val title = stringResource(screen.titleRes)
@@ -69,8 +70,8 @@ fun NavigationDrawer(
                     onDestinationClicked(screen)
                 },
                 modifier = Modifier.padding(
-                    vertical = 4.dp,
-                    horizontal = 8.dp
+                    vertical = IkaranpuDimens.SpacingExtraSmall,
+                    horizontal = IkaranpuDimens.SpacingSmall,
                 ),
                 shape = RoundedCornerShape(12.dp),
                 colors = NavigationDrawerItemDefaults.colors(
@@ -83,11 +84,11 @@ fun NavigationDrawer(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
 
         HorizontalDivider()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
 
         bottomScreens.forEach { screen ->
             val title = stringResource(screen.titleRes)
@@ -107,8 +108,8 @@ fun NavigationDrawer(
                     onDestinationClicked(screen)
                 },
                 modifier = Modifier.padding(
-                    vertical = 4.dp,
-                    horizontal = 8.dp
+                    vertical = IkaranpuDimens.SpacingExtraSmall,
+                    horizontal = IkaranpuDimens.SpacingSmall,
                 ),
                 shape = RoundedCornerShape(12.dp),
                 colors = NavigationDrawerItemDefaults.colors(

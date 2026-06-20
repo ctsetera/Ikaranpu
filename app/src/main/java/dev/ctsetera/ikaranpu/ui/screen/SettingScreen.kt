@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.component.AppBackButton
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.viewmodel.SettingViewModel
 
@@ -47,7 +48,7 @@ fun SettingScreen(
 }
 
 @Composable
-fun SettingScreenContent(
+private fun SettingScreenContent(
     volume: Int,
     onVolumeChange: (Int) -> Unit,
     onBack: () -> Unit,
@@ -61,7 +62,7 @@ fun SettingScreenContent(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(IkaranpuDimens.ScreenPadding)
                 .fillMaxWidth()
         ) {
             Row(
@@ -73,7 +74,7 @@ fun SettingScreenContent(
                     contentDescription = null,
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(IkaranpuDimens.SpacingSmall))
 
                 Text(
                     text = stringResource(R.string.setting_voice_volume_title),
@@ -113,7 +114,7 @@ fun SettingScreenContent(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun SettingScreenPreview() {
+private fun SettingScreenPreview() {
     IkaranpuTheme {
         SettingScreenContent(volume = 50, onBack = {}, onVolumeChange = {})
     }

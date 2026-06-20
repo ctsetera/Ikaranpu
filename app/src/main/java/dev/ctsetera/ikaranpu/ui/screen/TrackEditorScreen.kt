@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +64,7 @@ import dev.ctsetera.ikaranpu.ui.component.AppScaffold
 import dev.ctsetera.ikaranpu.ui.event.UiEvent
 import dev.ctsetera.ikaranpu.ui.state.SynthesisProgressUiState
 import dev.ctsetera.ikaranpu.ui.state.TrackEditorUiState
+import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuTheme
 import dev.ctsetera.ikaranpu.ui.util.rememberKeyboardHider
 import dev.ctsetera.ikaranpu.ui.util.rememberSingleClick
@@ -189,7 +191,7 @@ fun TrackEditorScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackEditor(
+private fun TrackEditor(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     title: String,
@@ -217,7 +219,7 @@ fun TrackEditor(
     Column(
         modifier = modifier
             .verticalScroll(scrollState)
-            .padding(16.dp)
+            .padding(IkaranpuDimens.ScreenPadding)
     ) {
         OutlinedTextField(
             value = title,
@@ -236,7 +238,7 @@ fun TrackEditor(
             }
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall))
 
         // ▶ Character
         val characterMap = mapOf(
@@ -244,42 +246,27 @@ fun TrackEditor(
             CharacterType.METAN to stringResource(R.string.character_shikoku_metan),
         )
         var characterExpanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            expanded = characterExpanded && enabled,
-            onExpandedChange = {
-                if (enabled) characterExpanded = !characterExpanded
-            }
+        TrackEditorDropdownField(
+            value = characterMap[selectedCharacter] ?: "",
+            label = stringResource(R.string.track_editor_character_label),
+            enabled = enabled,
+            expanded = characterExpanded,
+            menuAnchorType = MenuAnchorType.PrimaryNotEditable,
+            onExpandedChange = { characterExpanded = it },
+            onDismissRequest = { characterExpanded = false },
         ) {
-            OutlinedTextField(
-                value = characterMap[selectedCharacter] ?: "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.track_editor_character_label)) },
-                enabled = enabled,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = characterExpanded)
-                },
-                modifier = Modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth()
-            )
-            ExposedDropdownMenu(
-                expanded = characterExpanded,
-                onDismissRequest = { characterExpanded = false }
-            ) {
-                characterMap.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(item.value) },
-                        onClick = {
-                            onCharacterChange(item.key)
-                            characterExpanded = false
-                        }
-                    )
-                }
+            characterMap.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item.value) },
+                    onClick = {
+                        onCharacterChange(item.key)
+                        characterExpanded = false
+                    }
+                )
             }
         }
 
-        Spacer(Modifier.height(8.dp + 16.dp))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall))
 
         // ▶ Interval
         OutlinedTextField(
@@ -300,7 +287,7 @@ fun TrackEditor(
             }
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall))
 
         // ▶ Text items
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -321,12 +308,12 @@ fun TrackEditor(
                     contentDescription = stringResource(R.string.action_add),
                     modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(IkaranpuDimens.SpacingSmall))
                 Text(stringResource(R.string.action_add))
             }
         }
 
-        Spacer(Modifier.height(8.dp + 16.dp))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall + IkaranpuDimens.SpacingMedium))
 
         textItems.forEachIndexed { i, text ->
             val validationMessage = validateTextListItems.getOrNull(i)
@@ -341,14 +328,14 @@ fun TrackEditor(
                     enabled = enabled,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = IkaranpuDimens.SpacingMedium)
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = stringResource(R.string.action_delete),
                     )
                 }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(IkaranpuDimens.SpacingSmall))
 
                 OutlinedTextField(
                     value = text,
@@ -370,7 +357,7 @@ fun TrackEditor(
                 )
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(IkaranpuDimens.SpacingSmall))
         }
 
         // ▶ Play order
@@ -379,42 +366,27 @@ fun TrackEditor(
             PlayMode.RANDOM to stringResource(R.string.play_order_random),
         )
         var playOrderExpanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            expanded = playOrderExpanded && enabled,
-            onExpandedChange = {
-                if (enabled) playOrderExpanded = !playOrderExpanded
-            }
+        TrackEditorDropdownField(
+            value = playOrderMap[playOrder] ?: "",
+            label = stringResource(R.string.track_editor_play_order_label),
+            enabled = enabled,
+            expanded = playOrderExpanded,
+            menuAnchorType = MenuAnchorType.SecondaryEditable,
+            onExpandedChange = { playOrderExpanded = it },
+            onDismissRequest = { playOrderExpanded = false },
         ) {
-            OutlinedTextField(
-                value = playOrderMap[playOrder] ?: "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.track_editor_play_order_label)) },
-                enabled = enabled,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = playOrderExpanded)
-                },
-                modifier = Modifier
-                    .menuAnchor(MenuAnchorType.SecondaryEditable, enabled)
-                    .fillMaxWidth()
-            )
-            ExposedDropdownMenu(
-                expanded = playOrderExpanded,
-                onDismissRequest = { playOrderExpanded = false }
-            ) {
-                playOrderMap.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(item.value) },
-                        onClick = {
-                            onPlayOrderChange(item.key)
-                            playOrderExpanded = false
-                        }
-                    )
-                }
+            playOrderMap.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item.value) },
+                    onClick = {
+                        onPlayOrderChange(item.key)
+                        playOrderExpanded = false
+                    }
+                )
             }
         }
 
-        Spacer(Modifier.height(8.dp + 16.dp))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall))
     }
 
     // ボイスの生成状況をダイアログで表示する
@@ -448,8 +420,50 @@ fun TrackEditor(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackEditorSaveButtons(
+private fun TrackEditorDropdownField(
+    value: String,
+    label: String,
+    enabled: Boolean,
+    expanded: Boolean,
+    menuAnchorType: MenuAnchorType,
+    onExpandedChange: (Boolean) -> Unit,
+    onDismissRequest: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    ExposedDropdownMenuBox(
+        expanded = expanded && enabled,
+        onExpandedChange = {
+            if (enabled) onExpandedChange(it)
+        }
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            enabled = enabled,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .menuAnchor(menuAnchorType, enabled)
+                .fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded && enabled,
+            onDismissRequest = onDismissRequest
+        ) {
+            content()
+        }
+    }
+
+    Spacer(Modifier.height(IkaranpuDimens.DropdownSupportingTextSpace))
+}
+
+@Composable
+private fun TrackEditorSaveButtons(
     enabled: Boolean = true,
     onSave: () -> Unit,
     onSaveToDraft: () -> Unit,
@@ -464,7 +478,7 @@ fun TrackEditorSaveButtons(
         HorizontalDivider()
 
         Row(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(IkaranpuDimens.ScreenPadding)
         ) {
             OutlinedButton(
                 onClick = rememberSingleClick {
@@ -478,7 +492,7 @@ fun TrackEditorSaveButtons(
                 Text(stringResource(R.string.action_save_to_draft))
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(IkaranpuDimens.SpacingMedium))
 
             Button(
                 onClick = rememberSingleClick {
@@ -496,7 +510,7 @@ fun TrackEditorSaveButtons(
 }
 
 @Composable
-fun ExitTrackEditorConfirmDialog(
+private fun ExitTrackEditorConfirmDialog(
     isNewTrack: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -531,7 +545,7 @@ fun ExitTrackEditorConfirmDialog(
 }
 
 @Composable
-fun TrackEditorSynthesizeProgressDialog(
+private fun TrackEditorSynthesizeProgressDialog(
     current: Int,
     total: Int,
     onCancel: () -> Unit,
@@ -544,20 +558,20 @@ fun TrackEditorSynthesizeProgressDialog(
         },
         text = {
             Column {
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(IkaranpuDimens.SpacingLarge))
 
                 LinearProgressIndicator(
                     progress = { current.toFloat() / (total + 1).toFloat() },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(IkaranpuDimens.SpacingLarge))
 
                 Text(
                     text = stringResource(R.string.dialog_synthesizing_voice_progress, current)
                 )
 
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(IkaranpuDimens.SpacingLarge))
 
                 Text(
                     text = stringResource(R.string.dialog_synthesizing_voice_message)
@@ -576,7 +590,7 @@ fun TrackEditorSynthesizeProgressDialog(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackEditorPreview() {
+private fun TrackEditorPreview() {
     IkaranpuTheme {
         TrackEditor(
             title = "テストトラック",
@@ -599,7 +613,7 @@ fun TrackEditorPreview() {
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackEditorSynthesizeProgressDialogPreview() {
+private fun TrackEditorSynthesizeProgressDialogPreview() {
     IkaranpuTheme {
         TrackEditorSynthesizeProgressDialog(
             current = 5,
@@ -611,7 +625,7 @@ fun TrackEditorSynthesizeProgressDialogPreview() {
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun TrackEditorSaveButtonsPreview() {
+private fun TrackEditorSaveButtonsPreview() {
     IkaranpuTheme {
         TrackEditorSaveButtons(
             enabled = true,

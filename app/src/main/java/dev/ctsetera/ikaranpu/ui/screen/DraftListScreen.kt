@@ -96,7 +96,7 @@ fun DraftListScreen(
 }
 
 @Composable
-fun DraftListScreenContent(
+private fun DraftListScreenContent(
     uiState: DraftListUiState,
     onBack: () -> Unit,
     onEdit: (Long) -> Unit,
@@ -158,7 +158,7 @@ fun DraftListScreenContent(
 
 @Preview(showBackground = true, apiLevel = 34)
 @Composable
-fun DraftListScreenPreview() {
+private fun DraftListScreenPreview() {
     IkaranpuTheme {
         DraftListScreenContent(
             uiState = DraftListUiState(
