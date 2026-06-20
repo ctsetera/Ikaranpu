@@ -115,6 +115,72 @@ class TrackRepositoryTest {
         assertEquals(15L, dao.deletedTrackId)
     }
 
+    @Test
+    fun 通常トラック一覧取得時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(getTracksException = RuntimeException())
+        )
+
+        val result = repository.getTracks()
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
+    @Test
+    fun 下書き一覧取得時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(getDraftTracksException = RuntimeException())
+        )
+
+        val result = repository.getDraftTracks()
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
+    @Test
+    fun トラック取得時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(findByTrackIdException = RuntimeException())
+        )
+
+        val result = repository.getTrack(trackId = 1L)
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
+    @Test
+    fun トラック追加時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(insertException = RuntimeException())
+        )
+
+        val result = repository.addTrack(createTrack())
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
+    @Test
+    fun トラック更新時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(updateException = RuntimeException())
+        )
+
+        val result = repository.updateTrack(createTrack())
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
+    @Test
+    fun トラック削除時にDAOで例外が発生したらDatabaseFailureを返す() = runBlocking {
+        val repository = TrackRepository(
+            FakeTrackDao(deleteException = RuntimeException())
+        )
+
+        val result = repository.deleteTrack(trackId = 1L)
+
+        assertEquals(Err(Error.DatabaseFailure), result)
+    }
+
     private fun assertTrackMatches(entity: TrackEntity, track: Track) {
         assertEquals(entity.trackId, track.trackId)
         assertEquals(entity.trackName, track.trackName)
@@ -200,33 +266,48 @@ class TrackRepositoryTest {
         private val drafts: List<TrackEntity> = emptyList(),
         private val foundTrack: TrackEntity? = null,
         private val insertResult: Long = 1L,
+        private val getTracksException: Throwable? = null,
+        private val getDraftTracksException: Throwable? = null,
+        private val findByTrackIdException: Throwable? = null,
+        private val insertException: Throwable? = null,
+        private val updateException: Throwable? = null,
+        private val deleteException: Throwable? = null,
     ) : TrackDao {
         var insertedTrack: TrackEntity? = null
         var updatedTrack: TrackEntity? = null
         var deletedTrackId: Long? = null
 
         override suspend fun insert(user: TrackEntity): Long {
+            insertException?.let { throw it }
             insertedTrack = user
             return insertResult
         }
 
         override suspend fun update(user: TrackEntity) {
+            updateException?.let { throw it }
             updatedTrack = user
         }
 
         override suspend fun deleteByTrackId(trackId: Long) {
+            deleteException?.let { throw it }
             deletedTrackId = trackId
         }
 
         override suspend fun getAll(): List<TrackEntity> = tracks
 
-        override suspend fun getTracksOderByIsPinnedAscAndUpdatedAtDesc(): List<TrackEntity> =
-            tracks
+        override suspend fun getTracksOderByIsPinnedAscAndUpdatedAtDesc(): List<TrackEntity> {
+            getTracksException?.let { throw it }
+            return tracks
+        }
 
-        override suspend fun getDraftTracksOderByUpdatedAtDesc(): List<TrackEntity> =
-            drafts
+        override suspend fun getDraftTracksOderByUpdatedAtDesc(): List<TrackEntity> {
+            getDraftTracksException?.let { throw it }
+            return drafts
+        }
 
-        override suspend fun findByTrackId(trackId: Long): TrackEntity? =
-            foundTrack
+        override suspend fun findByTrackId(trackId: Long): TrackEntity? {
+            findByTrackIdException?.let { throw it }
+            return foundTrack
+        }
     }
 }

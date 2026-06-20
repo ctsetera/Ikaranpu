@@ -22,7 +22,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(tracks.map { convertEntityToModel(it) })
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
@@ -36,7 +36,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(drafts.map { convertEntityToModel(it) })
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
@@ -54,7 +54,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 }
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
@@ -68,7 +68,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
@@ -82,7 +82,7 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
@@ -96,10 +96,19 @@ class TrackRepository(private val trackDao: TrackDao) : ITrackRepository {
                 Ok(it)
             },
             onFailure = {
-                Log.e(this::class.java.simpleName, "DATABASE FAILURE\n" + it.stackTraceToString())
+                logDatabaseFailure(it)
                 Err(Error.DatabaseFailure)
             }
         )
+    }
+
+    private fun logDatabaseFailure(throwable: Throwable) {
+        runCatching {
+            Log.e(
+                this::class.java.simpleName,
+                "DATABASE FAILURE\n" + throwable.stackTraceToString()
+            )
+        }
     }
 
     private fun convertEntityToModel(trackEntity: TrackEntity): Track {
