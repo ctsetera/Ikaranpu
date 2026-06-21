@@ -21,4 +21,4 @@ Credits and notices for these resources are available in the app from:
 
 They are also available in the repository at:
 
-`app/src/main/assets/about.md`
+/`README.md`
