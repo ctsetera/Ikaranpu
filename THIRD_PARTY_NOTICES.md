@@ -13,8 +13,8 @@ The generated license metadata is also available at:
 
 # Other Third-party Resources
 
-This application also uses or references third-party services and resources
-such as VOICEVOX-related APIs, character assets, and the app icon source.
+This application also uses or references third-party services and resources, such as
+VOICEVOX-related APIs and character assets.
 Credits and notices for these resources are available in the app from:
 
 `このアプリについて`

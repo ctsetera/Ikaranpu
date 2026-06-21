@@ -52,16 +52,6 @@ https://voicevox.su-shiki.com/su-shikiapis/ttsquest/
 https://seiga.nicovideo.jp/seiga/im10788496  
 https://seiga.nicovideo.jp/seiga/im10791276
 
-### App Icon
-
-App icon derived from Google Noto Emoji (Squid Emoji), modified by the developer.
-
-Copyright 2013 Google, Inc.
-
-Licensed under the Apache License, Version 2.0.
-
-https://www.apache.org/licenses/LICENSE-2.0
-
 ## 商標
 
 「VOICEVOX」は VOICEVOX グループの登録商標です。  
