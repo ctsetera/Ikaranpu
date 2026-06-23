@@ -53,8 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import dev.ctsetera.ikaranpu.clearFocusOnKeyboardDismiss
 import dev.ctsetera.ikaranpu.R
+import dev.ctsetera.ikaranpu.clearFocusOnKeyboardDismiss
 import dev.ctsetera.ikaranpu.domain.model.CharacterType
 import dev.ctsetera.ikaranpu.domain.model.PlayMode
 import dev.ctsetera.ikaranpu.ui.component.AppScaffold
@@ -284,7 +284,7 @@ private fun TrackEditor(
             }
         }
 
-        Spacer(Modifier.height(IkaranpuDimens.SpacingSmall + IkaranpuDimens.SpacingMedium))
+        Spacer(Modifier.height(IkaranpuDimens.SpacingMedium))
 
         textItems.forEachIndexed { i, text ->
             val validationMessage = validateTextListItems.getOrNull(i)
