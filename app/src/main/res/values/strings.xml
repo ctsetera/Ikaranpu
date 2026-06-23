@@ -16,7 +16,7 @@
     <string name="validation_track_interval_required">インターバルは必須です</string>
     <string name="validation_track_interval_num">インターバルは整数である必要があります</string>
     <string name="validation_track_interval_min_10">インターバルは10以上の整数である必要があります</string>
-    <string name="validation_track_interval_max_1000">インターバルは1000以下の整数である必要があります</string>
+    <string name="validation_track_interval_max_1000">インターバルは999以下の整数である必要があります</string>
     <string name="track_save_success">トラックを保存しました</string>
     <string name="track_save_to_draft_success">トラックを下書きに保存しました</string>
     <string name="screen_track_list">トラックリスト</string>

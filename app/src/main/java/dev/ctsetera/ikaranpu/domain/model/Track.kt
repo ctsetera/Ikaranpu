@@ -29,7 +29,7 @@ data class Track(
     companion object {
         const val MAX_TRACK_NAME_LENGTH = 20
         const val MAX_TEXT_LENGTH = 20
-        const val MAX_INTERVAL = 1000
+        const val MAX_INTERVAL = 999
     }
 
     init {
