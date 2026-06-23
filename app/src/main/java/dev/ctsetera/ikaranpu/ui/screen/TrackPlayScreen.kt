@@ -104,6 +104,9 @@ private fun TrackPlayScreenContent(
                             Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
 
                             Text(characterName, style = MaterialTheme.typography.titleMedium)
+
+                            Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
+
                             Text(track.trackName, style = MaterialTheme.typography.titleLarge)
 
                             Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingExtraLarge))
