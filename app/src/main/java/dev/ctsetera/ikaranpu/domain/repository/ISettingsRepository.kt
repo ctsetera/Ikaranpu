@@ -9,4 +9,13 @@ interface ISettingsRepository {
     suspend fun saveVolume(
         volume: Int,
     )
+
+    suspend fun saveCheckPreRelease(
+        checkPreRelease: Boolean,
+    )
+
+    suspend fun saveUpdatePostponed(
+        postponedAtMillis: Long,
+        version: String,
+    )
 }

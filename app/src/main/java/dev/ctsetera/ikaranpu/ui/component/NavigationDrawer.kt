@@ -1,6 +1,7 @@
 package dev.ctsetera.ikaranpu.ui.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -15,10 +16,12 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import dev.ctsetera.ikaranpu.BuildConfig
 import dev.ctsetera.ikaranpu.R
 import dev.ctsetera.ikaranpu.ui.navigation.Screen
 import dev.ctsetera.ikaranpu.ui.theme.IkaranpuDimens
@@ -42,11 +45,20 @@ fun NavigationDrawer(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            stringResource(R.string.app_name),
-            modifier = Modifier.padding(IkaranpuDimens.ScreenPadding),
-            style = MaterialTheme.typography.titleLarge
-        )
+        Row {
+            Text(
+                stringResource(R.string.app_name),
+                modifier = Modifier.padding(IkaranpuDimens.ScreenPadding),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                "v${BuildConfig.VERSION_NAME}",
+                modifier = Modifier
+                    .padding(IkaranpuDimens.ScreenPadding)
+                    .align(Alignment.Bottom),
+            )
+        }
 
         HorizontalDivider()
 
@@ -119,5 +131,7 @@ fun NavigationDrawer(
                 )
             )
         }
+
+        Spacer(modifier = Modifier.height(IkaranpuDimens.SpacingMedium))
     }
 }

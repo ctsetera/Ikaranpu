@@ -37,15 +37,20 @@
     <string name="action_delete">削除</string>
     <string name="action_play">再生</string>
     <string name="action_save">保存</string>
+    <string name="action_open">開く</string>
+    <string name="action_remind_later">あとで通知する</string>
     <string name="action_save_to_draft">下書きに保存</string>
+    <string name="action_check_releases">リリース一覧をブラウザでチェックする</string>
     <string name="action_cancel">キャンセル</string>
     <string name="action_back_without_saving">保存せずに戻る</string>
     <string name="track_interval" tools:ignore="PluralsCandidate">Interval: %1$d sec</string>
     <string name="dialog_delete_track_title">トラックを削除しますか？</string>
     <string name="dialog_delete_track_message">トラックの情報・ダウンロードした音声ファイルはすべて削除されます。</string>
-    <string name="setting_voice_volume_title">ボイスの音量設定</string>
+    <string name="setting_voice_volume_title">ボイスの音量</string>
     <string name="setting_voice_volume_description">ボイスの音量を設定します。\nデフォルトは50%です。</string>
     <string name="setting_voice_volume_value">%1$d%%</string>
+    <string name="setting_update_title">アップデート</string>
+    <string name="setting_update_contains_beta">更新アナウンスの対象にベータ版も含める</string>
     <string name="track_editor_title_label">タイトル</string>
     <string name="track_editor_character_label">キャラクター</string>
     <string name="track_editor_interval_label">インターバル（秒）</string>
@@ -64,4 +69,6 @@
     <string name="track_play_stopped">停止中</string>
     <string name="track_play_stop">停止 </string>
     <string name="track_play_back">戻る</string>
+    <string name="dialog_new_version_available_title">新しいバージョンが利用可能です</string>
+    <string name="dialog_new_version_available_message">\"%1$s\" が利用可能です。GitHub Releasesからダウンロードできます。ダウンロードページをブラウザで開きますか？</string>
 </resources>

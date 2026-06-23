@@ -60,4 +60,15 @@ class SettingViewModel(
             )
         }
     }
+
+    fun saveCheckPreRelease(checkPreRelease: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        _uiState.value =
+            _uiState.value.copy(
+                settings = _uiState.value.settings.copy(
+                    checkPreRelease = checkPreRelease,
+                )
+            )
+
+        saveSettingUseCase(checkPreRelease = checkPreRelease)
+    }
 }

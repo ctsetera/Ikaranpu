@@ -122,6 +122,14 @@ class PlayTrackUseCaseTest {
 
         override suspend fun saveVolume(volume: Int) =
             error("Not used")
+
+        override suspend fun saveCheckPreRelease(checkPreRelease: Boolean) =
+            error("Not used")
+
+        override suspend fun saveUpdatePostponed(
+            postponedAtMillis: Long,
+            version: String,
+        ) = error("Not used")
     }
 
     private class FakeTrackRepository(

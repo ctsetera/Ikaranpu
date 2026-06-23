@@ -12,4 +12,20 @@ class SaveSettingUseCase(
             volume = volume,
         )
     }
+
+    suspend operator fun invoke(
+        checkPreRelease: Boolean,
+    ) {
+        repository.saveCheckPreRelease(checkPreRelease)
+    }
+
+    suspend operator fun invoke(
+        postponedAtMillis: Long,
+        version: String,
+    ) {
+        repository.saveUpdatePostponed(
+            postponedAtMillis = postponedAtMillis,
+            version = version,
+        )
+    }
 }

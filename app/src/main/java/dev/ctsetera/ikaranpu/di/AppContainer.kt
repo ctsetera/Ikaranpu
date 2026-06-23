@@ -4,13 +4,18 @@ import android.content.Context
 import dev.ctsetera.ikaranpu.data.audio.AudioPlayerManager
 import dev.ctsetera.ikaranpu.data.local.cache.AppSettingsDataStore
 import dev.ctsetera.ikaranpu.data.local.db.database.AppDatabase
+import dev.ctsetera.ikaranpu.data.remote.api.GitHubApiClient
+import dev.ctsetera.ikaranpu.data.remote.api.GitHubApiService
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiClient
 import dev.ctsetera.ikaranpu.data.remote.api.VoiceApiService
+import dev.ctsetera.ikaranpu.data.repository.AppUpdateRepository
 import dev.ctsetera.ikaranpu.data.repository.SettingsRepository
 import dev.ctsetera.ikaranpu.data.repository.TrackRepository
 import dev.ctsetera.ikaranpu.data.repository.VoiceRepository
 import dev.ctsetera.ikaranpu.domain.usecase.AddTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.CheckAppUpdateUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.DeleteTrackUseCase
+import dev.ctsetera.ikaranpu.domain.usecase.GetLatestAppReleaseUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetDraftListUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetSettingsUseCase
 import dev.ctsetera.ikaranpu.domain.usecase.GetTrackByTrackIdUseCase
@@ -37,6 +42,12 @@ class AppContainer(
         )
     }
 
+    private val appUpdateRepository by lazy {
+        AppUpdateRepository(
+            GitHubApiClient.retrofit.create(GitHubApiService::class.java)
+        )
+    }
+
     val getTrackListUseCase by lazy {
         GetTrackListUseCase(trackRepository)
     }
@@ -59,6 +70,14 @@ class AppContainer(
 
     val saveSettingUseCase by lazy {
         SaveSettingUseCase(settingsRepository)
+    }
+
+    val getLatestAppReleaseUseCase by lazy {
+        GetLatestAppReleaseUseCase(appUpdateRepository)
+    }
+
+    val checkAppUpdateUseCase by lazy {
+        CheckAppUpdateUseCase(getLatestAppReleaseUseCase)
     }
 
     fun createAddTrackUseCase(): AddTrackUseCase {
